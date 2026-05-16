@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Message Checker - Firebase Debug</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            padding: 20px; 
+            background: #f5f5f5;
+        }
+        .container { 
+            max-width: 800px; 
+            margin: 0 auto; 
+            background: white; 
+            padding: 20px; 
+            border-radius: 10px; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .status { 
+            padding: 10px; 
+            margin: 10px 0; 
+            border-radius: 5px; 
+        }
+        .success { 
+            background: #d4edda; 
+            color: #155724; 
+            border: 1px solid #c3e6cb;
+        }
+        .error { 
+            background: #f8d7da; 
+            color: #721c24; 
+            border: 1px solid #f5c6cb;
+        }
+        .info { 
+            background: #d1ecf1; 
+            color: #0c5460; 
+            border: 1px solid #bee5eb;
+        }
+        .message-item {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            background: #f9f9f9;
+        }
+        .message-header {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .message-meta {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 10px;
+        }
+        button {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #218838;
+        }
+        button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+        #log {
+            background: #000;
+            color: #0f0;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            height: 200px;
+            overflow-y: scroll;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Firebase Contact Messages Checker</h1>
+        <p>This tool helps you check if contact form messages are being saved to Firebase Firestore.</p>
+        
+        <div class="status info">
+            <strong>Project:</strong> farm-management-ec7d7<br>
+            <strong>Collection:</strong> contactMessages<br>
+            <strong>Status:</strong> <span id="connectionStatus">Checking...</span>
+        </div>
+
+        <div>
+            <button onclick="checkConnection()">🔌 Check Firebase Connection</button>
+            <button onclick="loadMessages()">📋 Load Messages</button>
+            <button onclick="sendTestMessage()">🧪 Send Test Message</button>
+            <button onclick="clearLog()">🧹 Clear Log</button>
+        </div>
+
+        <div id="log"></div>
+
+        <div id="messageCount" class="status info" style="display: none;">
+            <strong>Total Messages:</strong> <span id="count">0</span>
+        </div>
+
+        <div id="messagesList"></div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js';
+        import { getFirestore, collection, getDocs, addDoc, query, orderBy } from 'https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js';
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDGpGcbkk7mX3aBqnJMfCcP5LIGxxk3-nE",
+            authDomain: "farm-management-ec7d7.firebaseapp.com",
+            projectId: "farm-management-ec7d7",
+            storageBucket: "farm-management-ec7d7.firebasestorage.app",
+            messagingSenderId: "909053094819",
+            appId: "1:909053094819:web:4e47cbe9516c0ad29739e7"
+        };
+
+        let app, db;
+
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            const color = type === 'error' ? '#f00' : type === 'success' ? '#0f0' : '#0ff';
+            logDiv.innerHTML += `<div style="color: ${color}">[${timestamp}] ${message}</div>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function updateStatus(status, isError = false) {
+            const statusEl = document.getElementById('connectionStatus');
+            statusEl.textContent = status;
+            statusEl.parentElement.className = isError ? 'status error' : 'status success';
+        }
+
+        // Check Firebase connection
+        window.checkConnection = async function() {
+            try {
+                log('🔌 Checking Firebase connection...', 'info');
+                updateStatus('Connecting...', false);
+                
+                // Initialize Firebase
+                app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                
+                log('✅ Firebase initialized successfully', 'success');
+                updateStatus('Connected ✅', false);
+                
+                // Try to access Firestore
+                const testQuery = collection(db, 'contactMessages');
+                log('📊 Testing Firestore access...', 'info');
+                
+                const snapshot = await getDocs(testQuery);
+                log(`✅ Firestore access successful. Found ${snapshot.size} messages`, 'success');
+                
+                document.getElementById('messageCount').style.display = 'block';
+                document.getElementById('count').textContent = snapshot.size;
+                
+            } catch (error) {
+                log(`❌ Firebase connection failed: ${error.message}`, 'error');
+                updateStatus('Connection Failed ❌', true);
+                console.error('Firebase error:', error);
+            }
+        };
+
+        // Load messages from Firestore
+        window.loadMessages = async function() {
+            try {
+                if (!db) {
+                    log('⚠️ Firebase not connected. Checking connection first...', 'info');
+                    await checkConnection();
+                    if (!db) return;
+                }
+
+                log('📋 Loading messages from Firestore...', 'info');
+                
+                const messagesRef = collection(db, 'contactMessages');
+                const q = query(messagesRef, orderBy('timestamp', 'desc'));
+                const snapshot = await getDocs(q);
+                
+                const messagesList = document.getElementById('messagesList');
+                messagesList.innerHTML = '';
+                
+                if (snapshot.empty) {
+                    log('📭 No messages found in Firestore', 'info');
+                    messagesList.innerHTML = '<div class="status info">No messages found in the database.</div>';
+                    return;
+                }
+
+                log(`📋 Found ${snapshot.size} messages`, 'success');
+                
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const messageDiv = document.createElement('div');
+                    messageDiv.className = 'message-item';
+                    messageDiv.innerHTML = `
+                        <div class="message-header">
+                            Message from: ${data.fullName} (${data.email})
+                        </div>
+                        <div><strong>Phone:</strong> ${data.phone}</div>
+                        <div><strong>Message:</strong> ${data.message}</div>
+                        <div class="message-meta">
+                            <strong>ID:</strong> ${doc.id}<br>
+                            <strong>Timestamp:</strong> ${new Date(data.timestamp).toLocaleString()}<br>
+                            <strong>Status:</strong> ${data.read ? 'Read' : 'Unread'} | ${data.replied ? 'Replied' : 'Not Replied'}<br>
+                            <strong>Source:</strong> ${data.source}
+                        </div>
+                    `;
+                    messagesList.appendChild(messageDiv);
+                });
+
+            } catch (error) {
+                log(`❌ Failed to load messages: ${error.message}`, 'error');
+                console.error('Load messages error:', error);
+            }
+        };
+
+        // Send test message
+        window.sendTestMessage = async function() {
+            try {
+                if (!db) {
+                    log('⚠️ Firebase not connected. Checking connection first...', 'info');
+                    await checkConnection();
+                    if (!db) return;
+                }
+
+                log('🧪 Sending test message...', 'info');
+                
+                const testMessage = {
+                    fullName: 'Test User',
+                    email: 'test@example.com',
+                    phone: '+256 700 000 000',
+                    message: 'This is a test message sent from the message checker tool.',
+                    timestamp: new Date().toISOString(),
+                    read: false,
+                    replied: false,
+                    source: 'message_checker_tool',
+                    status: 'new'
+                };
+
+                const docRef = await addDoc(collection(db, 'contactMessages'), testMessage);
+                log(`✅ Test message sent successfully. Document ID: ${docRef.id}`, 'success');
+                
+                // Refresh the message list
+                await loadMessages();
+
+            } catch (error) {
+                log(`❌ Failed to send test message: ${error.message}`, 'error');
+                console.error('Send test message error:', error);
+            }
+        };
+
+        // Clear log
+        window.clearLog = function() {
+            document.getElementById('log').innerHTML = '';
+            log('🧹 Log cleared', 'info');
+        };
+
+        // Auto-check connection on load
+        document.addEventListener('DOMContentLoaded', function() {
+            log('🚀 Message Checker Tool Loaded', 'success');
+            log('👆 Click "Check Firebase Connection" to start', 'info');
+        });
+    </script>
+</body>
+</html>

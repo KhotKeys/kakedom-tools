@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farming Tools & Seeds - Käkedom Tools</title>
+    <link rel="icon" type="image/jpeg" href="images/logo.jpeg">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Nunito:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Premium dotted backdrop with soft veil (applies site-wide; hero stays clean due to its own background) */
+        body {
+            background:
+                radial-gradient(circle, rgba(27, 94, 32, 0.32) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.58), rgba(255, 255, 255, 0.72)),
+                var(--white);
+            background-size: 8px 8px, 100% 100%, 100% 100%;
+            background-attachment: fixed, scroll, scroll;
+        }
+        
+        /* Premium Hero Section with starry dot veil */
+        .hero-section {
+            background:
+                radial-gradient(circle, rgba(255, 255, 255, 0.28) 0.8px, transparent 1.2px),
+                radial-gradient(circle, rgba(255, 255, 255, 0.18) 1.6px, transparent 2px),
+                linear-gradient(135deg, rgba(27, 94, 32, 0.9) 0%, rgba(76, 175, 80, 0.8) 100%),
+                url('./images/kiry5.jpeg') center/cover;
+            background-size: 22px 22px, 36px 36px, 100% 100%, cover;
+            background-repeat: repeat, repeat, no-repeat, no-repeat;
+            background-position: 0 0, 8px 10px, center, center;
+            color: white;
+            padding: 120px 20px 80px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            min-height: 500px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .hero-content {
+            max-width: 900px;
+            z-index: 2;
+            position: relative;
+        }
+        
+        .hero-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            font-weight: 600;
+        }
+        
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            line-height: 1.2;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .hero-subtitle {
+            font-size: 1.4rem;
+            margin-bottom: 40px;
+            opacity: 0.95;
+            line-height: 1.6;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 50px;
+        }
+        
+        .hero-btn {
+            padding: 15px 35px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .btn-primary {
+            background: white;
+            color: var(--primary-green);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+        
+        .btn-secondary:hover {
+            background: white;
+            color: var(--primary-green);
+            transform: translateY(-3px);
+        }
+        
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            min-width: 150px;
+        }
+        
+        .stat-number {
+            display: block;
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 5px;
+            color: white;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            font-weight: 500;
+            color: white;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.2rem;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .hero-btn {
+                width: 250px;
+                justify-content: center;
+            }
+            
+            .hero-stats {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .stat-item {
+                min-width: auto;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .hero-section {
+                padding: 100px 15px 60px;
+            }
+            
+            .hero-title {
+                font-size: 2rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .stat-number {
+                font-size: 2rem;
+            }
+        }
+        
+        .tools-section {
+            padding: 80px 0;
+            background: transparent;
+        }
+        
+        .tools-hero {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .tools-hero h1 {
+            font-size: 3rem;
+            color: var(--primary-green);
+            margin-bottom: 20px;
+        }
+        
+        .tools-hero p {
+            font-size: 1.2rem;
+            color: var(--dark-gray);
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        @media (max-width: 480px) {
+            .tools-section {
+                padding: 80px 0;
+            }
+            
+            .tools-hero h1 {
+                font-size: 1.8rem;
+            }
+            
+            .tools-hero p {
+                font-size: 1rem;
+            }
+            
+            .purchase-summary {
+                padding: 20px !important;
+            }
+            
+            .purchase-summary h3 {
+                font-size: 1.3rem !important;
+                margin-bottom: 15px !important;
+            }
+            
+            .purchase-summary h4 {
+                font-size: 1rem !important;
+            }
+        }
+        
+        .monitoring-section {
+            max-width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .iot-grid {
+            margin: 0 auto;
+        }
+        
+        
+        @media (max-width: 768px) {
+            .monitoring-section {
+                padding: 30px !important;
+            }
+            
+            .monitoring-section h2 {
+                font-size: 1.8rem !important;
+            }
+            
+            .monitoring-section p {
+                font-size: 1rem !important;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .monitoring-section {
+                padding: 20px !important;
+                margin-top: 40px !important;
+                border-radius: 15px !important;
+            }
+            
+            .monitoring-section h2 {
+                font-size: 1.5rem !important;
+                margin-bottom: 10px !important;
+            }
+        }
+        
+        .category-section {
+            margin-bottom: 60px;
+        }
+        
+        .category-title {
+            font-size: 2.5rem;
+            color: var(--primary-green);
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+        
+        .category-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: var(--gradient-primary);
+        }
+        
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .tool-card {
+            background: var(--white);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(27, 94, 32, 0.1);
+        }
+        
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+        
+        .tool-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+        
+        .tool-name {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--primary-green);
+            margin-bottom: 10px;
+        }
+        
+        .tool-description {
+            color: var(--dark-gray);
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+        
+        .tool-price {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--secondary-green);
+        }
+        
+        .subcategory {
+            margin-bottom: 40px;
+        }
+        
+        .subcategory-title {
+            font-size: 1.8rem;
+            color: var(--dark-text);
+            margin-bottom: 20px;
+            padding-left: 15px;
+            border-left: 4px solid var(--primary-green);
+        }
+        
+        @media (max-width: 768px) {
+            .tools-hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .category-title {
+                font-size: 2rem;
+            }
+            
+            .tools-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <img src="images/footer-logo.png" alt="Käkedom Tools Logo" class="logo-img">
+                <span class="nav-title">Käkedom Tools</span>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
+                <li class="nav-item"><a href="about-us.html" class="nav-link">About Us</a></li>
+                <li class="nav-item"><a href="signup.html" class="nav-link">Learning</a></li>
+                <li class="nav-item"><a href="farming-tools.html" class="nav-link active">Farming Tools</a></li>
+                <li class="nav-item"><a href="signup.html" class="nav-link">Resources</a></li>
+                <li class="nav-item"><a href="login.html" class="nav-link">Login</a></li>
+            </ul>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Premium Hero Section -->
+    <section class="hero-section">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <i class="fas fa-tools"></i> Smart Farming Tools
+            </div>
+            <h1 class="hero-title">Essential Tools for <span style="color: #81C784;">Smart Farming</span></h1>
+            <p class="hero-subtitle">Discover our comprehensive collection of farming tools, seeds, and IoT monitoring equipment designed to empower farmers in Kiryandongo Refugee Camp with data-driven agricultural solutions.</p>
+            
+            <div class="hero-buttons">
+                <a href="#priority-tools" class="hero-btn btn-primary">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Priority Requirements
+                </a>
+                <a href="#iot-monitoring" class="hero-btn btn-secondary">
+                    <i class="fas fa-wifi"></i>
+                    IoT Monitoring
+                </a>
+            </div>
+            
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <span class="stat-number">50+</span>
+                    <span class="stat-label">Farming Tools</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">25+</span>
+                    <span class="stat-label">Seed Varieties</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">24/7</span>
+                    <span class="stat-label">IoT Monitoring</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="tools-section" id="priority-tools">
+        <div class="container">
+            <!-- Hero Section -->
+            <div class="tools-hero">
+                <h1>Smart Farming Tools & Real-Time Monitoring</h1>
+                <p>Essential tools and IoT monitoring equipment for our data-driven farming initiative in Kiryandongo Refugee Camp. All sensor data syncs live to Firebase for real-time dashboard monitoring.</p>
+            </div>
+
+            <!-- Priority Requirements Section -->
+            <div class="category-section">
+                <h2 class="category-title" style="color: #d32f2f;">
+                    <i class="fas fa-exclamation-triangle"></i> Immediate Requirements - Order Priority
+                </h2>
+                
+                <div class="subcategory">
+                    <h3 class="subcategory-title" style="color: #d32f2f;">🌱 Priority Seeds Needed Now</h3>
+                    <div class="tools-grid">
+                        <div class="tool-card" style="border: 3px solid #d32f2f; background: #ffebee;">
+                            <div class="tool-icon" style="background: #d32f2f;">
+                                <i class="fas fa-leaf"></i>
+                            </div>
+                            <div class="tool-name" style="color: #d32f2f;">Okra Seeds - PRIORITY</div>
+                            <div class="tool-description">High-yielding okra variety suitable for tropical climate. Disease resistant and fast-growing.</div>
+                            <div class="tool-price" style="color: #d32f2f; font-weight: 700;">URGENT: $5 - $8 per kg</div>
+                        </div>
+                        
+                        <div class="tool-card" style="border: 3px solid #d32f2f; background: #ffebee;">
+                            <div class="tool-icon" style="background: #d32f2f;">
+                                <i class="fas fa-carrot"></i>
+                            </div>
+                            <div class="tool-name" style="color: #d32f2f;">Tomato Seeds - PRIORITY</div>
+                            <div class="tool-description">Determinate tomato variety with good shelf life. Suitable for both fresh consumption and processing.</div>
+                            <div class="tool-price" style="color: #d32f2f; font-weight: 700;">URGENT: $15 - $25 per kg</div>
+                        </div>
+                        
+                        <div class="tool-card" style="border: 3px solid #d32f2f; background: #ffebee;">
+                            <div class="tool-icon" style="background: #d32f2f;">
+                                <i class="fas fa-pepper-hot"></i>
+                            </div>
+                            <div class="tool-name" style="color: #d32f2f;">Pepper Seeds - PRIORITY</div>
+                            <div class="tool-description">Bell pepper and chili pepper varieties. Heat-tolerant and high-yielding.</div>
+                            <div class="tool-price" style="color: #d32f2f; font-weight: 700;">URGENT: $20 - $30 per kg</div>
+                        </div>
+                        
+                        <div class="tool-card" style="border: 3px solid #d32f2f; background: #ffebee;">
+                            <div class="tool-icon" style="background: #d32f2f;">
+                                <i class="fas fa-seedling"></i>
+                            </div>
+                            <div class="tool-name" style="color: #d32f2f;">Cabbage Seeds - PRIORITY</div>
+                            <div class="tool-description">Round-headed cabbage variety with good storage quality and disease resistance.</div>
+                            <div class="tool-price" style="color: #d32f2f; font-weight: 700;">URGENT: $12 - $18 per kg</div>
+                        </div>
+                        
+                        <div class="tool-card" style="border: 3px solid #d32f2f; background: #ffebee;">
+                            <div class="tool-icon" style="background: #d32f2f;">
+                                <i class="fas fa-leaf"></i>
+                            </div>
+                            <div class="tool-name" style="color: #d32f2f;">Spinach Seeds - PRIORITY</div>
+                            <div class="tool-description">Fast-growing leafy green vegetable. Rich in nutrients and suitable for multiple harvests.</div>
+                            <div class="tool-price" style="color: #d32f2f; font-weight: 700;">URGENT: $8 - $12 per kg</div>
+                        </div>
+                        
+                        <div class="tool-card" style="border: 3px solid #d32f2f; background: #ffebee;">
+                            <div class="tool-icon" style="background: #d32f2f;">
+                                <i class="fas fa-apple-alt"></i>
+                            </div>
+                            <div class="tool-name" style="color: #d32f2f;">Eggplant Seeds - PRIORITY</div>
+                            <div class="tool-description">Purple eggplant variety with excellent fruit quality and extended harvest period.</div>
+                            <div class="tool-price" style="color: #d32f2f; font-weight: 700;">URGENT: $18 - $25 per kg</div>
+                        </div>
+                        
+                        <div class="tool-card" style="border: 3px solid #d32f2f; background: #ffebee;">
+                            <div class="tool-icon" style="background: #d32f2f;">
+                                <i class="fas fa-wheat-awn"></i>
+                            </div>
+                            <div class="tool-name" style="color: #d32f2f;">Maize Seeds - PRIORITY</div>
+                            <div class="tool-description">Improved maize variety with high yield potential and drought tolerance.</div>
+                            <div class="tool-price" style="color: #d32f2f; font-weight: 700;">URGENT: $3 - $6 per kg</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="subcategory">
+                    <h3 class="subcategory-title" style="color: #d32f2f;">🔧 Essential Tools Needed Now</h3>
+                    <div class="tools-grid">
+                        <div class="tool-card" style="border: 3px solid #d32f2f; background: #ffebee;">
+                            <div class="tool-icon" style="background: #d32f2f;">
+                                <i class="fas fa-hammer"></i>
+                            </div>
+                            <div class="tool-name" style="color: #d32f2f;">Hand Hoe - PRIORITY</div>
+                            <div class="tool-description">Essential tool for weeding, cultivating, and preparing seed beds. Durable steel construction.</div>
+                            <div class="tool-price" style="color: #d32f2f; font-weight: 700;">URGENT: $8 - $15 each</div>
+                        </div>
+                        
+                        <div class="tool-card" style="border: 3px solid #d32f2f; background: #ffebee;">
+                            <div class="tool-icon" style="background: #d32f2f;">
+                                <i class="fas fa-shower"></i>
+                            </div>
+                            <div class="tool-name" style="color: #d32f2f;">Watering Can - PRIORITY</div>
+                            <div class="tool-description">Metal or plastic watering can with rose attachment for gentle watering of seedlings.</div>
+                            <div class="tool-price" style="color: #d32f2f; font-weight: 700;">URGENT: $5 - $12 each</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="subcategory">
+                    <h3 class="subcategory-title" style="color: #d32f2f;">🌱 Soil Enhancement - Critical</h3>
+                    <div class="tools-grid">
+                        <div class="tool-card" style="border: 3px solid #d32f2f; background: #ffebee;">
+                            <div class="tool-icon" style="background: #d32f2f;">
+                                <i class="fas fa-seedling"></i>
+                            </div>
+                            <div class="tool-name" style="color: #d32f2f;">Organic Manure - PRIORITY</div>
+                            <div class="tool-description">Animal manure (cow, chicken, goat) for natural soil enrichment and crop nutrition.</div>
+                            <div class="tool-price" style="color: #d32f2f; font-weight: 700;">URGENT: $8 - $15 per 50kg bag</div>
+                        </div>
+                        
+                        <div class="tool-card" style="border: 3px solid #d32f2f; background: #ffebee;">
+                            <div class="tool-icon" style="background: #d32f2f;">
+                                <i class="fas fa-flask"></i>
+                            </div>
+                            <div class="tool-name" style="color: #d32f2f;">NPK Fertilizer - PRIORITY</div>
+                            <div class="tool-description">Balanced chemical fertilizer providing nitrogen, phosphorus, and potassium for plant growth.</div>
+                            <div class="tool-price" style="color: #d32f2f; font-weight: 700;">URGENT: $25 - $40 per 50kg bag</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Shopping Summary -->
+                <div style="background: #e8f5e8; border: 2px solid var(--primary-green); border-radius: 15px; padding: 30px; margin-top: 40px;" class="purchase-summary">
+                    <h3 style="color: var(--primary-green); text-align: center; margin-bottom: 20px;">
+                        <i class="fas fa-shopping-cart"></i> Immediate Purchase Summary
+                    </h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;" class="purchase-grid">
+                        <div>
+                            <h4 style="color: var(--dark-text); margin-bottom: 15px;">Seeds Required:</h4>
+                            <ul style="color: var(--dark-gray); line-height: 1.8;">
+                                <li>✓ Okra Seeds (1-2 kg)</li>
+                                <li>✓ Tomato Seeds (0.5-1 kg)</li>
+                                <li>✓ Pepper Seeds (0.5 kg)</li>
+                                <li>✓ Cabbage Seeds (0.5 kg)</li>
+                                <li>✓ Spinach Seeds (1 kg)</li>
+                                <li>✓ Eggplant Seeds (0.5 kg)</li>
+                                <li>✓ Maize Seeds (5-10 kg)</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 style="color: var(--dark-text); margin-bottom: 15px;">Tools & Inputs:</h4>
+                            <ul style="color: var(--dark-gray); line-height: 1.8;">
+                                <li>✓ Hand Hoe (2-3 pieces)</li>
+                                <li>✓ Watering Can (2-3 pieces)</li>
+                                <li>✓ Organic Manure (5-10 bags)</li>
+                                <li>✓ NPK Fertilizer (2-3 bags)</li>
+                            </ul>
+                            <div style="margin-top: 20px; padding: 15px; background: var(--white); border-radius: 10px; border: 1px solid var(--primary-green);">
+                                <strong style="color: var(--primary-green);">Estimated Total Budget: $350 - $600</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Real-Time Monitoring Equipment Section -->
+            <div id="iot-monitoring" style="margin-top: 60px; padding: 40px; background: linear-gradient(135deg, #f0f9ff, #e0f2fe); border-radius: 20px; border: 2px solid #0891b2;" class="monitoring-section">
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <h2 style="color: #0891b2; font-size: 2.2rem; margin-bottom: 10px; margin-left: auto; margin-right: auto;">
+                        <i class="fas fa-wifi"></i> Real-Time Garden Monitoring System
+                    </h2>
+                    <p style="color: #0f766e; font-size: 1.1rem; font-weight: 500; margin-left: auto; margin-right: auto;">IoT sensors collecting live data and syncing to Firebase dashboard</p>
+                </div>
+                
+                <div class="tools-grid iot-grid">
+                    <div class="tool-card" style="border: 2px solid #10b981; background: linear-gradient(135deg, #f0fdf4, #ecfdf5);">
+                        <div class="tool-icon" style="background: #10b981;">
+                            <i class="fas fa-thermometer-half"></i>
+                        </div>
+                        <div class="tool-name" style="color: #10b981;">Soil Temperature Sensor</div>
+                        <div class="tool-description">Continuous soil temperature monitoring with Firebase real-time sync. Alerts for optimal planting conditions.</div>
+                        <div class="tool-price" style="color: #10b981;">📊 Live Data: 24/7 monitoring</div>
+                    </div>
+                    
+                    <div class="tool-card" style="border: 2px solid #3b82f6; background: linear-gradient(135deg, #eff6ff, #dbeafe);">
+                        <div class="tool-icon" style="background: #3b82f6;">
+                            <i class="fas fa-tint"></i>
+                        </div>
+                        <div class="tool-name" style="color: #3b82f6;">Soil Moisture Sensor</div>
+                        <div class="tool-description">Real-time soil hydration levels with automated irrigation alerts. Data streams live to dashboard.</div>
+                        <div class="tool-price" style="color: #3b82f6;">📊 Live Data: Moisture tracking</div>
+                    </div>
+                    
+                    <div class="tool-card" style="border: 2px solid #f59e0b; background: linear-gradient(135deg, #fffbeb, #fef3c7);">
+                        <div class="tool-icon" style="background: #f59e0b;">
+                            <i class="fas fa-vial"></i>
+                        </div>
+                        <div class="tool-name" style="color: #f59e0b;">pH Level Monitor</div>
+                        <div class="tool-description">Continuous soil pH measurement for optimal nutrient uptake. Firebase integration for historical trends.</div>
+                        <div class="tool-price" style="color: #f59e0b;">📊 Live Data: pH monitoring</div>
+                    </div>
+                    
+                    <div class="tool-card" style="border: 2px solid #8b5cf6; background: linear-gradient(135deg, #faf5ff, #f3e8ff);">
+                        <div class="tool-icon" style="background: #8b5cf6;">
+                            <i class="fas fa-cloud-rain"></i>
+                        </div>
+                        <div class="tool-name" style="color: #8b5cf6;">Humidity Sensor</div>
+                        <div class="tool-description">Air humidity monitoring for disease prevention and optimal growing conditions. Real-time Firebase sync.</div>
+                        <div class="tool-price" style="color: #8b5cf6;">📊 Live Data: Humidity levels</div>
+                    </div>
+                    
+                    <div class="tool-card" style="border: 2px solid #06b6d4; background: linear-gradient(135deg, #f0fdfa, #ccfbf1);">
+                        <div class="tool-icon" style="background: #06b6d4;">
+                            <i class="fas fa-leaf"></i>
+                        </div>
+                        <div class="tool-name" style="color: #06b6d4;">Soil Health Analyzer</div>
+                        <div class="tool-description">Comprehensive soil nutrient analysis with organic matter detection. Live dashboard updates via Firebase.</div>
+                        <div class="tool-price" style="color: #06b6d4;">📊 Live Data: Soil analysis</div>
+                    </div>
+                    
+                    <div class="tool-card" style="border: 2px solid #ef4444; background: linear-gradient(135deg, #fef2f2, #fee2e2);">
+                        <div class="tool-icon" style="background: #ef4444;">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <div class="tool-name" style="color: #ef4444;">Firebase Integration Hub</div>
+                        <div class="tool-description">Central data collection point syncing all sensor data to Firebase for real-time dashboard monitoring and alerts.</div>
+                        <div class="tool-price" style="color: #ef4444;">🔄 Live Sync: Real-time updates</div>
+                    </div>
+                </div>
+                
+                <div style="text-align: center; margin-top: 30px; padding: 20px; background: rgba(16, 185, 129, 0.1); border-radius: 15px;">
+                    <h3 style="color: #10b981; margin-bottom: 15px;">
+                        <i class="fas fa-sync-alt"></i> All Data Syncs Live to Firebase Dashboard
+                    </h3>
+                    <p style="color: #0f766e; font-size: 1.1rem; line-height: 1.6;">
+                        Every sensor measurement is automatically collected and synchronized to our Firebase database in real-time. 
+                        Monitor soil health, moisture, temperature, humidity, and pH levels directly from your dashboard with instant alerts and historical data analysis.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Complete Catalog Section -->
+            <div style="margin-top: 80px; padding-top: 40px; border-top: 3px solid var(--light-gray);">
+                <div style="text-align: center; margin-bottom: 40px;">
+                    <h2 style="color: var(--dark-gray); font-size: 2rem;">Complete Farming Tools & Seeds Catalog</h2>
+                    <p style="color: var(--dark-gray); opacity: 0.8;">Full inventory available for future reference and planning</p>
+                </div>
+
+            <!-- Seeds Section -->
+            <div class="category-section">
+                <h2 class="category-title">
+                    <i class="fas fa-seedling"></i> Seeds & Planting Materials (Full Catalog)
+                </h2>
+                
+                <div class="subcategory">
+                    <h3 class="subcategory-title">Vegetable Seeds</h3>
+                    <div class="tools-grid">
+                        <div class="tool-card">
+                            <div class="tool-icon">
+                                <i class="fas fa-leaf"></i>
+                            </div>
+                            <div class="tool-name">Okra Seeds</div>
+                            <div class="tool-description">High-yielding okra variety suitable for tropical climate. Disease resistant and fast-growing.</div>
+                            <div class="tool-price">Price: $5 - $8 per kg</div>
+                        </div>
+                        
+                        <div class="tool-card">
+                            <div class="tool-icon">
+                                <i class="fas fa-carrot"></i>
+                            </div>
+                            <div class="tool-name">Tomato Seeds</div>
+                            <div class="tool-description">Determinate tomato variety with good shelf life. Suitable for both fresh consumption and processing.</div>
+                            <div class="tool-price">Price: $15 - $25 per kg</div>
+                        </div>
+                        
+                        <div class="tool-card">
+                            <div class="tool-icon">
+                                <i class="fas fa-pepper-hot"></i>
+                            </div>
+                            <div class="tool-name">Pepper Seeds</div>
+                            <div class="tool-description">Bell pepper and chili pepper varieties. Heat-tolerant and high-yielding.</div>
+                            <div class="tool-price">Price: $20 - $30 per kg</div>
+                        </div>
+                        
+                        <div class="tool-card">
+                            <div class="tool-icon">
+                                <i class="fas fa-seedling"></i>
+                            </div>
+                            <div class="tool-name">Cabbage Seeds</div>
+                            <div class="tool-description">Round-headed cabbage variety with good storage quality and disease resistance.</div>
+                            <div class="tool-price">Price: $12 - $18 per kg</div>
+                        </div>
+                        
+                        <div class="tool-card">
+                            <div class="tool-icon">
+                                <i class="fas fa-leaf"></i>
+                            </div>
+                            <div class="tool-name">Spinach Seeds</div>
+                            <div class="tool-description">Fast-growing leafy green vegetable. Rich in nutrients and suitable for multiple harvests.</div>
+                            <div class="tool-price">Price: $8 - $12 per kg</div>
+                        </div>
+                        
+                        <div class="tool-card">
+                            <div class="tool-icon">
+                                <i class="fas fa-apple-alt"></i>
+                            </div>
+                            <div class="tool-name">Eggplant Seeds</div>
+                            <div class="tool-description">Purple eggplant variety with excellent fruit quality and extended harvest period.</div>
+                            <div class="tool-price">Price: $18 - $25 per kg</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="subcategory">
+                    <h3 class="subcategory-title">Grain & Cereal Seeds</h3>
+                    <div class="tools-grid">
+                        <div class="tool-card">
+                            <div class="tool-icon">
+                                <i class="fas fa-wheat-awn"></i>
+                            </div>
+                            <div class="tool-name">Maize Seeds</div>
+                            <div class="tool-description">Improved maize variety with high yield potential and drought tolerance.</div>
+                            <div class="tool-price">Price: $3 - $6 per kg</div>
+                        </div>
+                        
+                        <div class="tool-card">
+                            <div class="tool-icon">
+                                <i class="fas fa-seedling"></i>
+                            </div>
+                            <div class="tool-name">Rice Seeds</div>
+                            <div class="tool-description">Upland rice variety suitable for rain-fed cultivation with good grain quality.</div>
+                            <div class="tool-price">Price: $4 - $7 per kg</div>
+                        </div>
+                        
+                        <div class="tool-card">
+                            <div class="tool-icon">
+                                <i class="fas fa-wheat-awn"></i>
+                            </div>
+                            <div class="tool-name">Sorghum Seeds</div>
+                            <div class="tool-description">Drought-resistant grain crop with high nutritional value and multiple uses.</div>
+                            <div class="tool-price">Price: $2 - $5 per kg</div>
+                        </div>
+                        
+                        <div class="tool-card">
+                            <div class="tool-icon">
+                                <i class="fas fa-seedling"></i>
+                            </div>
+                            <div class="tool-name">Millet Seeds</div>
+                            <div class="tool-description">Small grain cereal with excellent drought tolerance and nutritional benefits.</div>
+                            <div class="tool-price">Price: $3 - $6 per kg</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="subcategory">
+                    <h3 class="subcategory-title">Legume Seeds</h3>
+                    <div class="tools-grid">
+                        <div class="tool-card">
+                            <div class="tool-icon">
+                                <i class="fas fa-seedling"></i>
+                            </div>
+                            <div class="tool-name">Bean Seeds</div>
+                            <div class="tool-description">Common bean varieties including climbing and bush types. High protein content.</div>
+                            <div class="tool-price">Price: $4 - $8 per kg</div>
+                        </div>
+                        
+                        <div class="tool-card">
+                            <div class="tool-icon">
+                                <i class="fas fa-leaf"></i>
+                            </div>
+                            <div class="tool-name">Groundnut Seeds</div>
+                            <div class="tool-description">Peanut variety with good oil content and market value. Nitrogen-fixing crop.</div>
+                            <div class="tool-price">Price: $6 - $10 per kg</div>
+                        </div>
+                        
+                        <div class="tool-card">
+                            <div class="tool-icon">
+                                <i class="fas fa-seedling"></i>
+                            </div>
+                            <div class="tool-name">Cowpea Seeds</div>
+                            <div class="tool-description">Black-eyed pea variety with dual purpose for grain and fodder production.</div>
+                            <div class="tool-price">Price: $5 - $9 per kg</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hand Tools Section -->
+            <div class="category-section">
+                <h2 class="category-title">
+                    <i class="fas fa-tools"></i> Hand Tools
+                </h2>
+                
+                <div class="tools-grid">
+                    <div class="tool-card">
+                        <div class="tool-icon">
+                            <i class="fas fa-hammer"></i>
+                        </div>
+                        <div class="tool-name">Hand Hoe</div>
+                        <div class="tool-description">Essential tool for weeding, cultivating, and preparing seed beds. Durable steel construction.</div>
+                        <div class="tool-price">Price: $8 - $15 each</div>
+                    </div>
+                    
+                    <div class="tool-card">
+                        <div class="tool-icon">
+                            <i class="fas fa-cut"></i>
+                        </div>
+                        <div class="tool-name">Machete/Panga</div>
+                        <div class="tool-description">Multi-purpose cutting tool for clearing vegetation, harvesting, and general farm work.</div>
+                        <div class="tool-price">Price: $10 - $20 each</div>
+                    </div>
+                    
+                    <div class="tool-card">
+                        <div class="tool-icon">
+                            <i class="fas fa-shovel"></i>
+                        </div>
+                        <div class="tool-name">Spade</div>
+                        <div class="tool-description">Heavy-duty spade for digging, transplanting, and soil preparation work.</div>
+                        <div class="tool-price">Price: $12 - $25 each</div>
+                    </div>
+                    
+                    <div class="tool-card">
+                        <div class="tool-icon">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                        <div class="tool-name">Garden Fork</div>
+                        <div class="tool-description">Four-pronged fork for loosening soil, composting, and handling organic matter.</div>
+                        <div class="tool-price">Price: $15 - $30 each</div>
+                    </div>
+                    
+                    <div class="tool-card">
+                        <div class="tool-icon">
+                            <i class="fas fa-cut"></i>
+                        </div>
+                        <div class="tool-name">Pruning Shears</div>
+                        <div class="tool-description">Sharp cutting tool for pruning plants, harvesting fruits, and maintaining crops.</div>
+                        <div class="tool-price">Price: $8 - $18 each</div>
+                    </div>
+                    
+                    <div class="tool-card">
+                        <div class="tool-icon">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                        <div class="tool-name">Garden Rake</div>
+                        <div class="tool-description">Steel rake for leveling soil, gathering debris, and preparing planting areas.</div>
+                        <div class="tool-price">Price: $10 - $22 each</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Irrigation Tools Section -->
+            <div class="category-section">
+                <h2 class="category-title">
+                    <i class="fas fa-tint"></i> Irrigation & Water Management
+                </h2>
+                
+                <div class="tools-grid">
+                    <div class="tool-card">
+                        <div class="tool-icon">
+                            <i class="fas fa-shower"></i>
+                        </div>
+                        <div class="tool-name">Watering Can</div>
+                        <div class="tool-description">Metal or plastic watering can with rose attachment for gentle watering of seedlings.</div>
+                        <div class="tool-price">Price: $5 - $12 each</div>
+                    </div>
+                    
+                    <div class="tool-card">
+                        <div class="tool-icon">
+                            <i class="fas fa-circle"></i>
+                        </div>
+                        <div class="tool-name">Garden Hose</div>
+                        <div class="tool-description">Flexible hose for water transportation and irrigation. Various lengths available.</div>
+                        <div class="tool-price">Price: $15 - $40 per 50m</div>
+                    </div>
+                    
+                    <div class="tool-card">
+                        <div class="tool-icon">
+                            <i class="fas fa-spray-can"></i>
+                        </div>
+                        <div class="tool-name">Sprinkler System</div>
+                        <div class="tool-description">Basic sprinkler setup for efficient water distribution across farming areas.</div>
+                        <div class="tool-price">Price: $25 - $60 per set</div>
+                    </div>
+                    
+                    <div class="tool-card">
+                        <div class="tool-icon">
+                            <i class="fas fa-tint"></i>
+                        </div>
+                        <div class="tool-name">Drip Irrigation Kit</div>
+                        <div class="tool-description">Water-efficient irrigation system for precise water delivery to plant roots.</div>
+                        <div class="tool-price">Price: $30 - $80 per kit</div>
+                    </div>
+                    
+                    <div class="tool-card">
+                        <div class="tool-icon">
+                            <i class="fas fa-water"></i>
+                        </div>
+                        <div class="tool-name">Water Storage Tank</div>
+                        <div class="tool-description">Plastic water storage tank for rainwater harvesting and irrigation water storage.</div>
+                        <div class="tool-price">Price: $50 - $150 each</div>
+                    </div>
+                    
+                    <div class="tool-card">
+                        <div class="tool-icon">
+                            <i class="fas fa-pump-soap"></i>
+                        </div>
+                        <div class="tool-name">Water Pump</div>
+                        <div class="tool-description">Manual or solar-powered water pump for irrigation from wells or water sources.</div>
+                        <div class="tool-price">Price: $80 - $300 each</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Soil & Fertilizer Section -->
+            <div class="category-section">
+                <h2 class="category-title">
+                    <i class="fas fa-mountain"></i> Soil & Fertilizers
+                </h2>
+                
+                <div class="tools-grid">
+                    <div class="tool-card">
+                        <div class="tool-icon">
+                            <i class="fas fa-leaf"></i>
+                        </div>
+                        <div class="tool-name">Organic Compost</div>
+                        <div class="tool-description">Well-decomposed organic matter to improve soil fertility and structure.</div>
+                        <div class="tool-price">Price: $10 - $20 per 50kg bag</div>
+                    </div>
+                    
+                    <div class="tool-card">
+                        <div class="tool-icon">
+                            <i class="fas fa-flask"></i>
+                        </div>
+                        <div class="tool-name">NPK Fertilizer</div>
+                        <div class="tool-description">Balanced chemical fertilizer providing nitrogen, phosphorus, and potassium for plant growth.</div>
+                        <div class="tool-price">Price: $25 - $40 per 50kg bag</div>
+                    </div>
+                    
+                    <div class="tool-card">
+                        <div class="tool-icon">
+                            <i class="fas fa-seedling"></i>
+                        </div>
+                        <div class="tool-name">Organic Manure</div>
+                        <div class="tool-description">Animal manure (cow, chicken, goat) for natural soil enrichment and crop nutrition.</div>
+                        <div class="tool-price">Price: $8 - $15 per 50kg bag</div>
+                    </div>
+                    
+                    <div class="tool-card">
+                        <div class="tool-icon">
+                            <i class="fas fa-vial"></i>
+                        </div>
+                        <div class="tool-name">Soil pH Test Kit</div>
+                        <div class="tool-description">Simple test kit to measure soil acidity/alkalinity for optimal crop production.</div>
+                        <div class="tool-price">Price: $15 - $30 per kit</div>
+                    </div>
+                    
+                    <div class="tool-card">
+                        <div class="tool-icon">
+                            <i class="fas fa-mountain"></i>
+                        </div>
+                        <div class="tool-name">Lime</div>
+                        <div class="tool-description">Agricultural lime for adjusting soil pH and improving nutrient availability.</div>
+                        <div class="tool-price">Price: $5 - $12 per 50kg bag</div>
+                    </div>
+                    
+                    <div class="tool-card">
+                        <div class="tool-icon">
+                            <i class="fas fa-leaf"></i>
+                        </div>
+                        <div class="tool-name">Mulching Material</div>
+                        <div class="tool-description">Organic mulch (grass, leaves) or plastic mulch for moisture conservation and weed control.</div>
+                        <div class="tool-price">Price: $3 - $8 per bale</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pest Control Section -->
+            <div class="category-section">
+                <h2 class="category-title">
+                    <i class="fas fa-bug"></i> Pest & Disease Control
+                </h2>
+                
+                <div class="tools-grid">
+                    <div class="tool-card">
+                        <div class="tool-icon">
+                            <i class="fas fa-spray-can"></i>
+                        </div>
+                        <div class="tool-name">Knapsack Sprayer</div>
+                        <div class="tool-description">Backpack sprayer for applying pesticides, herbicides, and foliar fertilizers.</div>
+                        <div class="tool-price">Price: $20 - $45 each</div>
+                    </div>
+                    
+                    <div class="tool-card">
+                        <div class="tool-icon">
+                            <i class="fas fa-leaf"></i>
+                        </div>
+                        <div class="tool-name">Organic Pesticide</div>
+                        <div class="tool-description">Natural pest control solutions including neem oil and botanical extracts.</div>
+                        <div class="tool-price">Price: $12 - $25 per liter</div>
+                    </div>
+                    
+                    <div class="tool-card">
+                        <div class="tool-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div class="tool-name">Fungicide</div>
+                        <div class="tool-description">Disease control chemicals for preventing and treating plant fungal infections.</div>
+                        <div class="tool-price">Price: $15 - $35 per liter</div>
+                    </div>
+                    
+                    <div class="tool-card">
+                        <div class="tool-icon">
+                            <i class="fas fa-mask"></i>
+                        </div>
+                        <div class="tool-name">Protective Equipment</div>
+                        <div class="tool-description">Safety masks, gloves, and clothing for safe pesticide application.</div>
+                        <div class="tool-price">Price: $10 - $25 per set</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Storage & Post-Harvest Section -->
+            <div class="category-section">
+                <h2 class="category-title">
+                    <i class="fas fa-warehouse"></i> Storage & Post-Harvest
+                </h2>
+                
+                <div class="tools-grid">
+                    <div class="tool-card">
+                        <div class="tool-icon">
+                            <i class="fas fa-box"></i>
+                        </div>
+                        <div class="tool-name">Storage Sacks</div>
+                        <div class="tool-description">Woven polypropylene sacks for storing grains and other dry farm produce.</div>
+                        <div class="tool-price">Price: $2 - $5 each</div>
+                    </div>
+                    
+                    <div class="tool-card">
+                        <div class="tool-icon">
+                            <i class="fas fa-warehouse"></i>
+                        </div>
+                        <div class="tool-name">Granary</div>
+                        <div class="tool-description">Small-scale grain storage structure for protecting harvested crops from pests.</div>
+                        <div class="tool-price">Price: $50 - $150 each</div>
+                    </div>
+                    
+                    <div class="tool-card">
+                        <div class="tool-icon">
+                            <i class="fas fa-weight"></i>
+                        </div>
+                        <div class="tool-name">Weighing Scale</div>
+                        <div class="tool-description">Digital or mechanical scale for measuring farm produce for sale or storage.</div>
+                        <div class="tool-price">Price: $25 - $60 each</div>
+                    </div>
+                    
+                    <div class="tool-card">
+                        <div class="tool-icon">
+                            <i class="fas fa-tarp"></i>
+                        </div>
+                        <div class="tool-name">Tarpaulin</div>
+                        <div class="tool-description">Waterproof covering for protecting crops during drying and temporary storage.</div>
+                        <div class="tool-price">Price: $10 - $30 each</div>
+                    </div>
+                </div>
+            </div>
+            
+            </div> <!-- End Complete Catalog Section -->
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-brand">
+                        <img class="footer-logo" src="./images/footer-logo.png" alt="Käkedom Tools logo">
+                    </div>
+                    <p>Käkedom Tools is a platform designed to assist farmers in understanding & providing essential farming methods, seeds, tools, and practices through hands-on workshops. It also features a well-developed IoT device for testing and monitoring purposes.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="about-us.html">About Us</a></li>
+                        <li><a href="farming-tools.html">Farming Tools</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                        <li><a href="login.html">Login</a></li>
+                        <li><a href="signup.html">Sign Up</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Smart Tools</h3>
+                    <ul>
+                        <li><a href="signup.html">Soil Monitoring</a></li>
+                        <li><a href="signup.html">Organic Manure (Yield) increase</a></li>
+                        <li><a href="signup.html">Water Management</a></li>
+                        <li><a href="signup.html">Learning Platform</a></li>
+                        <li><a href="signup.html">Resource Sharing</a></li>
+                        <li><a href="signup.html">Seed Bank</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Connect With Us</h3>
+                    <p>Follow us on social media for updates and farming tips</p>
+                    <div class="social-links">
+                        <a href="https://www.facebook.com/profile.php?id=61580896567755&mibextid=wwXIfr&mibextid=wwXIfr"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://www.linkedin.com/company/k%C3%A4kedom-tools/"><i class="fab fa-linkedin-in"></i></a>
+                        <!-- <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a> -->
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Käkedom Tools. All rights reserved.</p>
+                <div class="footer-legal-links">
+                    <a href="privacy-policy.html">Privacy Policy</a>
+                    <a href="terms-of-service.html">Terms of Service</a>
+                    <a href="cookie-policy.html">Cookie Policy</a>
+                    <button class="cookie-settings-btn" id="cookieSettingsBtn">
+                        <i class="fas fa-cookie-bite"></i> Cookie Settings
+                    </button>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        // Enhanced Mobile Navigation for Farming Tools Page
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Farming Tools - DOM loaded, setting up mobile navigation...');
+            
+            // Wait a bit to ensure all elements are ready
+            setTimeout(function() {
+                const hamburger = document.querySelector('.hamburger');
+                const navMenu = document.querySelector('.nav-menu');
+                
+                console.log('Farming Tools - Elements found:', {
+                    hamburger: !!hamburger,
+                    navMenu: !!navMenu
+                });
+                
+                if (hamburger && navMenu) {
+                    console.log('✅ Farming Tools - Setting up hamburger click listener');
+                    
+                    // Clear any existing click handlers
+                    hamburger.style.cursor = 'pointer';
+                    hamburger.style.userSelect = 'none';
+                    
+                    function toggleMenu(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        console.log('🍔 Farming Tools - Hamburger clicked!');
+                        
+                        const isActive = hamburger.classList.contains('active');
+                        
+                        if (isActive) {
+                            hamburger.classList.remove('active');
+                            navMenu.classList.remove('active');
+                            document.body.style.overflow = '';
+                            console.log('📱 Farming Tools - Menu closed');
+                        } else {
+                            hamburger.classList.add('active');
+                            navMenu.classList.add('active');
+                            document.body.style.overflow = 'hidden';
+                            console.log('📱 Farming Tools - Menu opened');
+                        }
+                    }
+                    
+                    // Add click listener
+                    hamburger.addEventListener('click', toggleMenu);
+                    hamburger.addEventListener('touchstart', toggleMenu);
+                    
+                    // Close menu when clicking on links
+                    const navLinks = document.querySelectorAll('.nav-menu a');
+                    navLinks.forEach(link => {
+                        link.addEventListener('click', function() {
+                            hamburger.classList.remove('active');
+                            navMenu.classList.remove('active');
+                            document.body.style.overflow = '';
+                            console.log('🔗 Farming Tools - Menu closed after link click');
+                        });
+                    });
+                    
+                    // Close menu when clicking outside
+                    document.addEventListener('click', function(e) {
+                        if (!hamburger.contains(e.target) && !navMenu.contains(e.target)) {
+                            hamburger.classList.remove('active');
+                            navMenu.classList.remove('active');
+                            document.body.style.overflow = '';
+                        }
+                    });
+                    
+                    console.log('✅ Farming Tools - Mobile navigation setup complete');
+                } else {
+                    console.error('❌ Farming Tools - Mobile navigation elements not found');
+                }
+            }, 100);
+        });
+    </script>
+</body>
+</html>

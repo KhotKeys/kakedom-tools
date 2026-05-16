@@ -1,0 +1,68 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // EXISTING USERS COLLECTION RULES (UNCHANGED)
+    // This rule applies to the "users" collection
+    match /users/{userId} {
+      // Allow a user to read their own data, OR if the user has the 'admin' role
+      allow read: if request.auth.uid == userId || 
+                     (request.auth != null && 
+                      get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin');
+      
+      // Allow a user to create their own user document when they sign up
+      allow create: if request.auth != null;
+      
+      // Allow a user to update their own data
+      allow update: if request.auth.uid == userId;
+      
+      // Disallow anyone from deleting user data directly
+      allow delete: if false;
+    }
+    
+    // HELPER FUNCTION FOR ADMIN CHECK
+    function isAdmin() {
+      return request.auth != null && 
+             exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    // NEW RULES FOR CONTACT MESSAGES ONLY
+    match /contactMessages/{messageId} {
+      // Allow anyone to CREATE contact messages (for public contact form)
+      // This is the only rule that doesn't require authentication
+      allow create: if validateContactMessage();
+      
+      // Only authenticated ADMINS can read contact messages
+      allow read: if isAdmin();
+                     
+      // Only authenticated ADMINS can update contact messages (mark as read, replied, etc.)
+      allow update: if isAdmin();
+                       
+      // Only authenticated ADMINS can delete contact messages
+      allow delete: if isAdmin();
+    }
+    
+    // VALIDATION FUNCTION FOR CONTACT MESSAGES
+    function validateContactMessage() {
+      return request.resource.data.keys().hasAll(['fullName', 'email', 'phone', 'message', 'timestamp']) &&
+             request.resource.data.fullName is string &&
+             request.resource.data.email is string &&
+             request.resource.data.phone is string &&
+             request.resource.data.message is string &&
+             request.resource.data.timestamp is string &&
+             request.resource.data.fullName.size() > 0 &&
+             request.resource.data.email.size() > 0 &&
+             request.resource.data.message.size() > 0;
+    }
+    
+    // PRESERVE ANY OTHER EXISTING COLLECTIONS
+    // If you have other collections, add their rules here
+    // Example: sensor data, farm data, etc.
+    
+    // Default deny rule for any other collections not explicitly defined above
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

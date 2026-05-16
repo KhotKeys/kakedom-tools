@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Contact Messages | Käkedom Tools</title>
+    <link rel="icon" type="image/jpeg" href="images/logo.jpeg">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .admin-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: var(--light-gray);
+            min-height: 100vh;
+        }
+        
+        .admin-header {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .admin-title {
+            color: var(--dark-green);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .admin-stats {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .stat-card {
+            text-align: center;
+            padding: 1rem;
+            background: var(--gradient-primary);
+            color: white;
+            border-radius: 10px;
+            min-width: 100px;
+        }
+        
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .messages-container {
+            background: var(--white);
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+        
+        .messages-header {
+            padding: 1.5rem 2rem;
+            background: var(--primary-green);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .filter-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid rgba(255,255,255,0.3);
+            background: transparent;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-btn.active,
+        .filter-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .messages-list {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .message-item {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid #eee;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .message-item:hover {
+            background: var(--light-gray);
+        }
+        
+        .message-item.unread {
+            background: #f8f9ff;
+            border-left: 4px solid var(--primary-green);
+        }
+        
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
+        }
+        
+        .message-sender {
+            font-weight: 600;
+            color: var(--dark-green);
+        }
+        
+        .message-email {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .message-date {
+            color: #999;
+            font-size: 0.85rem;
+        }
+        
+        .message-preview {
+            color: #666;
+            margin: 0.5rem 0;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .message-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.85rem;
+            color: #999;
+        }
+        
+        .message-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .status-badge {
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .status-new {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .status-read {
+            background: #95a5a6;
+            color: white;
+        }
+        
+        .status-replied {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .message-actions {
+            display: flex;
+            gap: 0.5rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .message-item:hover .message-actions {
+            opacity: 1;
+        }
+        
+        .action-btn {
+            padding: 0.25rem 0.5rem;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        
+        .btn-reply {
+            background: var(--primary-green);
+            color: white;
+        }
+        
+        .btn-delete {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .btn-mark-read {
+            background: #3498db;
+            color: white;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+        
+        /* Modal for message details */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: 15px;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #999;
+        }
+        
+        .message-full {
+            line-height: 1.6;
+            margin: 1rem 0;
+        }
+        
+        .reply-section {
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+        }
+        
+        .reply-form textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 1rem;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            font-family: inherit;
+            resize: vertical;
+        }
+        
+        .reply-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <img src="images/footer-logo.png" alt="Käkedom Tools Logo" class="logo-img">
+                <span>Käkedom Tools - Admin</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="admin-dashboard.html">Dashboard</a></li>
+                <li><a href="admin-messages.html" class="active">Messages</a></li>
+                <li><a href="admin-dashboard.html">Users</a></li>
+                <li><a href="index.html">Back to Site</a></li>
+                <li><a href="login.html" id="logoutBtn">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="admin-container">
+        <!-- Admin Header -->
+        <div class="admin-header">
+            <h1 class="admin-title">
+                <i class="fas fa-envelope"></i>
+                Contact Messages
+            </h1>
+            <div class="admin-stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalMessages">0</div>
+                    <div class="stat-label">Total</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="unreadMessages">0</div>
+                    <div class="stat-label">Unread</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="todayMessages">0</div>
+                    <div class="stat-label">Today</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Messages Container -->
+        <div class="messages-container">
+            <div class="messages-header">
+                <h3>Messages</h3>
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-filter="all">All</button>
+                    <button class="filter-btn" data-filter="unread">Unread</button>
+                    <button class="filter-btn" data-filter="replied">Replied</button>
+                    <button class="filter-btn" data-filter="today">Today</button>
+                </div>
+            </div>
+            
+            <div class="messages-list" id="messagesList">
+                <div class="loading">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    Loading messages...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Message Detail Modal -->
+    <div id="messageModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Message Details</h3>
+                <button class="close-modal" onclick="closeModal()">&times;</button>
+            </div>
+            <div id="modalBody">
+                <!-- Message content will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js';
+        import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, orderBy, query, where, onSnapshot } from 'https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js';
+        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js';
+
+        // Firebase configuration (use your existing config)
+        const firebaseConfig = {
+            apiKey: "AIzaSyDGpGcbkk7mX3aBqnJMfCcP5LIGxxk3-nE",
+            authDomain: "farm-management-ec7d7.firebaseapp.com",
+            projectId: "farm-management-ec7d7",
+            storageBucket: "farm-management-ec7d7.firebasestorage.app",
+            messagingSenderId: "909053094819",
+            appId: "1:909053094819:web:4e47cbe9516c0ad29739e7"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        // Global variables
+        let currentFilter = 'all';
+        let allMessages = [];
+
+        // Check authentication
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                window.location.href = 'login.html';
+                return;
+            }
+            // Load messages when authenticated
+            loadMessages();
+        });
+
+        // Load messages from Firebase
+        async function loadMessages() {
+            try {
+                const messagesRef = collection(db, 'contactMessages');
+                const q = query(messagesRef, orderBy('timestamp', 'desc'));
+                
+                // Real-time listener
+                onSnapshot(q, (snapshot) => {
+                    allMessages = [];
+                    snapshot.forEach((doc) => {
+                        allMessages.push({
+                            id: doc.id,
+                            ...doc.data()
+                        });
+                    });
+                    updateStats();
+                    filterMessages(currentFilter);
+                });
+                
+            } catch (error) {
+                console.error('Error loading messages:', error);
+                document.getElementById('messagesList').innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Error loading messages. Please try again.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Update statistics
+        function updateStats() {
+            const total = allMessages.length;
+            const unread = allMessages.filter(msg => !msg.read).length;
+            const today = allMessages.filter(msg => {
+                const msgDate = new Date(msg.timestamp);
+                const todayDate = new Date();
+                return msgDate.toDateString() === todayDate.toDateString();
+            }).length;
+
+            document.getElementById('totalMessages').textContent = total;
+            document.getElementById('unreadMessages').textContent = unread;
+            document.getElementById('todayMessages').textContent = today;
+        }
+
+        // Filter messages
+        function filterMessages(filter) {
+            currentFilter = filter;
+            let filteredMessages = allMessages;
+
+            switch (filter) {
+                case 'unread':
+                    filteredMessages = allMessages.filter(msg => !msg.read);
+                    break;
+                case 'replied':
+                    filteredMessages = allMessages.filter(msg => msg.replied);
+                    break;
+                case 'today':
+                    filteredMessages = allMessages.filter(msg => {
+                        const msgDate = new Date(msg.timestamp);
+                        const todayDate = new Date();
+                        return msgDate.toDateString() === todayDate.toDateString();
+                    });
+                    break;
+            }
+
+            displayMessages(filteredMessages);
+            
+            // Update filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.filter === filter);
+            });
+        }
+
+        // Display messages
+        function displayMessages(messages) {
+            const messagesList = document.getElementById('messagesList');
+            
+            if (messages.length === 0) {
+                messagesList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <p>No messages found.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            messagesList.innerHTML = messages.map(message => `
+                <div class="message-item ${!message.read ? 'unread' : ''}" onclick="openMessage('${message.id}')">
+                    <div class="message-header">
+                        <div>
+                            <div class="message-sender">${message.fullName}</div>
+                            <div class="message-email">${message.email}</div>
+                        </div>
+                        <div class="message-date">${formatDate(message.timestamp)}</div>
+                    </div>
+                    <div class="message-preview">${message.message}</div>
+                    <div class="message-meta">
+                        <div class="message-status">
+                            <span class="status-badge ${message.read ? (message.replied ? 'status-replied' : 'status-read') : 'status-new'}">
+                                ${message.read ? (message.replied ? 'Replied' : 'Read') : 'New'}
+                            </span>
+                        </div>
+                        <div>Phone: ${message.phone}</div>
+                        <div class="message-actions">
+                            <button class="action-btn btn-reply" onclick="event.stopPropagation(); replyToMessage('${message.id}')">
+                                <i class="fas fa-reply"></i> Reply
+                            </button>
+                            <button class="action-btn btn-mark-read" onclick="event.stopPropagation(); markAsRead('${message.id}')">
+                                <i class="fas fa-check"></i> Mark Read
+                            </button>
+                            <button class="action-btn btn-delete" onclick="event.stopPropagation(); deleteMessage('${message.id}')">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Format date
+        function formatDate(timestamp) {
+            const date = new Date(timestamp);
+            const now = new Date();
+            const diffTime = Math.abs(now - date);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            if (diffDays === 1) {
+                return 'Today ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            } else if (diffDays === 2) {
+                return 'Yesterday ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            } else if (diffDays <= 7) {
+                return diffDays + ' days ago';
+            } else {
+                return date.toLocaleDateString();
+            }
+        }
+
+        // Open message modal
+        window.openMessage = async function(messageId) {
+            const message = allMessages.find(msg => msg.id === messageId);
+            if (!message) return;
+
+            // Mark as read
+            if (!message.read) {
+                await markAsRead(messageId);
+            }
+
+            const modal = document.getElementById('messageModal');
+            document.getElementById('modalTitle').textContent = `Message from ${message.fullName}`;
+            document.getElementById('modalBody').innerHTML = `
+                <div class="message-details">
+                    <p><strong>From:</strong> ${message.fullName}</p>
+                    <p><strong>Email:</strong> <a href="mailto:${message.email}">${message.email}</a></p>
+                    <p><strong>Phone:</strong> <a href="tel:${message.phone}">${message.phone}</a></p>
+                    <p><strong>Date:</strong> ${new Date(message.timestamp).toLocaleString()}</p>
+                </div>
+                <div class="message-full">
+                    <h4>Message:</h4>
+                    <p>${message.message.replace(/\n/g, '<br>')}</p>
+                </div>
+                <div class="reply-section">
+                    <h4>Reply:</h4>
+                    <form onsubmit="sendReply(event, '${messageId}', '${message.email}')">
+                        <textarea placeholder="Type your reply here..." required></textarea>
+                        <div class="reply-actions">
+                            <button type="submit" class="btn-primary">Send Reply</button>
+                            <button type="button" class="btn-secondary" onclick="closeModal()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            modal.style.display = 'block';
+        };
+
+        // Close modal
+        window.closeModal = function() {
+            document.getElementById('messageModal').style.display = 'none';
+        };
+
+        // Mark message as read
+        window.markAsRead = async function(messageId) {
+            try {
+                await updateDoc(doc(db, 'contactMessages', messageId), {
+                    read: true,
+                    readAt: new Date().toISOString()
+                });
+            } catch (error) {
+                console.error('Error marking message as read:', error);
+            }
+        };
+
+        // Delete message
+        window.deleteMessage = async function(messageId) {
+            if (confirm('Are you sure you want to delete this message?')) {
+                try {
+                    await deleteDoc(doc(db, 'contactMessages', messageId));
+                } catch (error) {
+                    console.error('Error deleting message:', error);
+                    alert('Error deleting message. Please try again.');
+                }
+            }
+        };
+
+        // Send reply (this would typically integrate with your email service)
+        window.sendReply = async function(event, messageId, recipientEmail) {
+            event.preventDefault();
+            const replyText = event.target.querySelector('textarea').value;
+            
+            try {
+                // Update message as replied
+                await updateDoc(doc(db, 'contactMessages', messageId), {
+                    replied: true,
+                    replyText: replyText,
+                    repliedAt: new Date().toISOString()
+                });
+
+                // Here you would integrate with your email service to actually send the reply
+                // For now, we'll just show a success message
+                alert('Reply recorded! Note: To actually send emails, integrate with EmailJS or your email service.');
+                closeModal();
+                
+            } catch (error) {
+                console.error('Error sending reply:', error);
+                alert('Error sending reply. Please try again.');
+            }
+        };
+
+        // Filter button event listeners
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterMessages(btn.dataset.filter);
+            });
+        });
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('messageModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        };
+
+        // Make functions globally available
+        window.filterMessages = filterMessages;
+    </script>
+</body>
+</html>

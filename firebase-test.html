@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Connection Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        button {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #218838; }
+        .log {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🔥 Firebase Connection Diagnostic Test</h1>
+        
+        <div id="status">
+            <div class="status info">
+                <strong>Status:</strong> Starting Firebase connection test...
+            </div>
+        </div>
+
+        <div>
+            <button onclick="testFirebaseConnection()">Test Firebase Connection</button>
+            <button onclick="testAuthentication()">Test Authentication Setup</button>
+            <button onclick="testFirestore()">Test Firestore Connection</button>
+            <button onclick="clearLog()">Clear Log</button>
+        </div>
+
+        <h3>Console Log:</h3>
+        <div id="log" class="log">Click buttons above to start testing...\n</div>
+    </div>
+
+    <script type="module">
+        let logElement = document.getElementById('log');
+        let statusElement = document.getElementById('status');
+
+        function addLog(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            logElement.textContent += `[${timestamp}] ${message}\n`;
+            logElement.scrollTop = logElement.scrollHeight;
+            console.log(`[FIREBASE TEST] ${message}`);
+        }
+
+        function setStatus(message, type = 'info') {
+            const statusClass = type === 'success' ? 'success' : type === 'error' ? 'error' : 'info';
+            statusElement.innerHTML = `<div class="status ${statusClass}"><strong>Status:</strong> ${message}</div>`;
+        }
+
+        window.addLog = addLog;
+        window.setStatus = setStatus;
+
+        window.clearLog = function() {
+            logElement.textContent = 'Log cleared...\n';
+        }
+
+        window.testFirebaseConnection = async function() {
+            addLog('🔥 Testing Firebase Connection...');
+            setStatus('Testing Firebase connection...', 'info');
+            
+            try {
+                // Import Firebase modules
+                addLog('📦 Importing Firebase modules...');
+                const { initializeApp } = await import("https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js");
+                const { getAuth, connectAuthEmulator } = await import("https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js");
+                const { getFirestore, connectFirestoreEmulator } = await import("https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js");
+                
+                addLog('✅ Firebase modules imported successfully');
+
+                // Firebase configuration
+                const firebaseConfig = {
+                    apiKey: "AIzaSyBOJSo0b_AN4HB7wHVN8ERAAgGkilTnZWk",
+                    authDomain: "cmua-7957a.firebaseapp.com",
+                    databaseURL: "https://cmua-7957a-default-rtdb.firebaseio.com",
+                    projectId: "cmua-7957a",
+                    storageBucket: "cmua-7957a.appspot.com",
+                    messagingSenderId: "273566170303",
+                    appId: "1:273566170303:web:3d02105c5dd0e15e251a0a",
+                    measurementId: "G-0T0Q0TP91N"
+                };
+
+                addLog('🔧 Initializing Firebase with project: ' + firebaseConfig.projectId);
+                const app = initializeApp(firebaseConfig);
+                addLog('✅ Firebase app initialized successfully');
+
+                const auth = getAuth(app);
+                const db = getFirestore(app);
+                
+                addLog('✅ Auth and Firestore services obtained');
+                addLog('🔗 Auth domain: ' + firebaseConfig.authDomain);
+                addLog('🗄️ Project ID: ' + firebaseConfig.projectId);
+                
+                window.testAuth = auth;
+                window.testDb = db;
+                
+                setStatus('Firebase connection successful!', 'success');
+                addLog('🎉 Firebase connection test completed successfully!');
+                
+            } catch (error) {
+                addLog('❌ Firebase connection failed: ' + error.message);
+                addLog('🔍 Error details: ' + JSON.stringify(error, null, 2));
+                setStatus('Firebase connection failed: ' + error.message, 'error');
+            }
+        }
+
+        window.testAuthentication = async function() {
+            addLog('🔐 Testing Firebase Authentication...');
+            setStatus('Testing authentication setup...', 'info');
+            
+            try {
+                if (!window.testAuth) {
+                    throw new Error('Please run Firebase connection test first');
+                }
+                
+                const { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } = await import("https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js");
+                
+                // Test authentication status
+                addLog('👤 Current auth state: ' + (window.testAuth.currentUser ? 'Signed in' : 'Not signed in'));
+                
+                // Test with a dummy account (this will likely fail, but we'll see the error)
+                const testEmail = `test.${Date.now()}@example.com`;
+                const testPassword = 'testpassword123';
+                
+                addLog('🧪 Attempting to create test account: ' + testEmail);
+                
+                try {
+                    const userCredential = await createUserWithEmailAndPassword(window.testAuth, testEmail, testPassword);
+                    addLog('✅ Test account created successfully! UID: ' + userCredential.user.uid);
+                    
+                    // Clean up - delete the test user
+                    await signOut(window.testAuth);
+                    addLog('🧹 Test user signed out');
+                    
+                    setStatus('Authentication is working correctly!', 'success');
+                    
+                } catch (authError) {
+                    if (authError.code === 'auth/admin-restricted-operation') {
+                        addLog('⚠️ Authentication is restricted - need to enable Email/Password auth in Firebase Console');
+                        setStatus('Authentication not enabled in Firebase Console', 'error');
+                    } else if (authError.code === 'auth/operation-not-allowed') {
+                        addLog('⚠️ Email/Password authentication is not enabled in Firebase Console');
+                        setStatus('Email/Password authentication not enabled', 'error');
+                    } else if (authError.code === 'auth/network-request-failed') {
+                        addLog('⚠️ Network error - check internet connection or Firebase project status');
+                        setStatus('Network error connecting to Firebase', 'error');
+                    } else {
+                        addLog('❌ Auth error: ' + authError.code + ' - ' + authError.message);
+                        setStatus('Authentication error: ' + authError.code, 'error');
+                    }
+                }
+                
+            } catch (error) {
+                addLog('❌ Authentication test failed: ' + error.message);
+                setStatus('Authentication test failed: ' + error.message, 'error');
+            }
+        }
+
+        window.testFirestore = async function() {
+            addLog('🗄️ Testing Firestore Database...');
+            setStatus('Testing Firestore connection...', 'info');
+            
+            try {
+                if (!window.testDb) {
+                    throw new Error('Please run Firebase connection test first');
+                }
+                
+                const { doc, setDoc, getDoc, deleteDoc } = await import("https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js");
+                
+                // Test write operation
+                const testDocId = 'test_' + Date.now();
+                addLog('📝 Attempting to write test document: ' + testDocId);
+                
+                await setDoc(doc(window.testDb, 'test_collection', testDocId), {
+                    message: 'Firebase connection test',
+                    timestamp: new Date(),
+                    test: true
+                });
+                
+                addLog('✅ Test document written successfully');
+                
+                // Test read operation
+                addLog('📖 Attempting to read test document...');
+                const docSnap = await getDoc(doc(window.testDb, 'test_collection', testDocId));
+                
+                if (docSnap.exists()) {
+                    addLog('✅ Test document read successfully: ' + JSON.stringify(docSnap.data()));
+                    
+                    // Clean up - delete test document
+                    await deleteDoc(doc(window.testDb, 'test_collection', testDocId));
+                    addLog('🧹 Test document cleaned up');
+                    
+                    setStatus('Firestore is working correctly!', 'success');
+                } else {
+                    addLog('⚠️ Test document was not found after writing');
+                    setStatus('Firestore read operation failed', 'error');
+                }
+                
+            } catch (firestoreError) {
+                if (firestoreError.code === 'permission-denied') {
+                    addLog('⚠️ Permission denied - Firestore security rules may be too restrictive');
+                    addLog('💡 Suggestion: Check Firestore security rules in Firebase Console');
+                    setStatus('Firestore permission denied - check security rules', 'error');
+                } else if (firestoreError.code === 'unavailable') {
+                    addLog('⚠️ Firestore is currently unavailable - may be a temporary issue');
+                    setStatus('Firestore temporarily unavailable', 'error');
+                } else {
+                    addLog('❌ Firestore error: ' + firestoreError.code + ' - ' + firestoreError.message);
+                    setStatus('Firestore error: ' + firestoreError.code, 'error');
+                }
+            }
+        }
+
+        // Auto-run connection test on page load
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                addLog('🚀 Starting automatic Firebase connection test...');
+                window.testFirebaseConnection();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

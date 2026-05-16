@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Signup Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-form {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+        button:hover { background: #218838; }
+        button:disabled { background: #6c757d; cursor: not-allowed; }
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            display: none;
+        }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .log {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-form">
+        <h1>🧪 Simple Firebase Signup Test</h1>
+        <p>This will help us identify exactly what's wrong with account creation.</p>
+        
+        <form id="testForm">
+            <div class="form-group">
+                <label for="testEmail">Email:</label>
+                <input type="email" id="testEmail" value="test@example.com" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="testPassword">Password:</label>
+                <input type="password" id="testPassword" value="testpassword123" required>
+            </div>
+            
+            <button type="submit" id="signupBtn">Create Test Account</button>
+        </form>
+        
+        <div id="status" class="status"></div>
+        <div id="log" class="log">Console output will appear here...\n</div>
+    </div>
+
+    <script type="module">
+        const statusDiv = document.getElementById('status');
+        const logDiv = document.getElementById('log');
+        const signupBtn = document.getElementById('signupBtn');
+        
+        function addLog(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            logDiv.textContent += `[${timestamp}] ${message}\n`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(message);
+        }
+        
+        function showStatus(message, type = 'error') {
+            statusDiv.textContent = message;
+            statusDiv.className = `status ${type}`;
+            statusDiv.style.display = 'block';
+        }
+        
+        document.getElementById('testForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('testEmail').value;
+            const password = document.getElementById('testPassword').value;
+            
+            signupBtn.textContent = 'Creating Account...';
+            signupBtn.disabled = true;
+            statusDiv.style.display = 'none';
+            
+            addLog('🚀 Starting signup test...');
+            addLog(`📧 Email: ${email}`);
+            addLog(`🔐 Password: ${password.replace(/./g, '*')}`);
+            
+            try {
+                addLog('📦 Importing Firebase modules...');
+                const { initializeApp } = await import("https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js");
+                const { getAuth, createUserWithEmailAndPassword } = await import("https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js");
+                const { getFirestore, doc, setDoc } = await import("https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js");
+                
+                addLog('✅ Firebase modules imported successfully');
+                
+                // Initialize Firebase
+                const firebaseConfig = {
+                    apiKey: "AIzaSyBOJSo0b_AN4HB7wHVN8ERAAgGkilTnZWk",
+                    authDomain: "cmua-7957a.firebaseapp.com",
+                    databaseURL: "https://cmua-7957a-default-rtdb.firebaseio.com",
+                    projectId: "cmua-7957a",
+                    storageBucket: "cmua-7957a.appspot.com",
+                    messagingSenderId: "273566170303",
+                    appId: "1:273566170303:web:3d02105c5dd0e15e251a0a",
+                    measurementId: "G-0T0Q0TP91N"
+                };
+                
+                addLog('🔧 Initializing Firebase...');
+                const app = initializeApp(firebaseConfig);
+                const auth = getAuth(app);
+                const db = getFirestore(app);
+                
+                addLog('✅ Firebase initialized successfully');
+                addLog(`🏗️ Project: ${firebaseConfig.projectId}`);
+                addLog(`🔐 Auth Domain: ${firebaseConfig.authDomain}`);
+                
+                // Attempt to create user
+                addLog('👤 Creating user account...');
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+                
+                addLog('✅ User account created successfully!');
+                addLog(`🆔 User UID: ${user.uid}`);
+                addLog(`📧 User Email: ${user.email}`);
+                
+                // Test Firestore write
+                addLog('💾 Saving user data to Firestore...');
+                await setDoc(doc(db, "users", user.uid), {
+                    uid: user.uid,
+                    email: user.email,
+                    createdAt: new Date(),
+                    testAccount: true
+                });
+                
+                addLog('✅ User data saved to Firestore successfully!');
+                showStatus('🎉 Account creation successful! Check the console log above.', 'success');
+                
+                // Sign out the test user
+                addLog('🚪 Signing out test user...');
+                await auth.signOut();
+                addLog('✅ Test user signed out');
+                
+            } catch (error) {
+                addLog('❌ ERROR OCCURRED:');
+                addLog(`Error Code: ${error.code}`);
+                addLog(`Error Message: ${error.message}`);
+                addLog(`Full Error: ${JSON.stringify(error, null, 2)}`);
+                
+                let userMessage = 'Account creation failed. ';
+                
+                switch(error.code) {
+                    case 'auth/operation-not-allowed':
+                        userMessage += 'Email/Password authentication is not enabled in Firebase Console.';
+                        addLog('💡 SOLUTION: Enable Email/Password auth in Firebase Console');
+                        break;
+                    case 'auth/admin-restricted-operation':
+                        userMessage += 'Authentication is restricted by admin settings.';
+                        addLog('💡 SOLUTION: Check Firebase Console authentication settings');
+                        break;
+                    case 'auth/network-request-failed':
+                        userMessage += 'Network connection failed.';
+                        addLog('💡 SOLUTION: Check internet connection and Firebase project status');
+                        break;
+                    case 'auth/invalid-api-key':
+                        userMessage += 'Invalid Firebase API key.';
+                        addLog('💡 SOLUTION: Check Firebase configuration in firebase-config.js');
+                        break;
+                    case 'permission-denied':
+                        userMessage += 'Firestore permission denied.';
+                        addLog('💡 SOLUTION: Update Firestore security rules to allow writes');
+                        break;
+                    case 'auth/email-already-in-use':
+                        userMessage += 'This email is already registered.';
+                        addLog('💡 SOLUTION: Try a different email or use the login page');
+                        break;
+                    default:
+                        userMessage += error.message;
+                        addLog('💡 SOLUTION: Check the error details above and Firebase Console');
+                }
+                
+                showStatus(userMessage, 'error');
+            } finally {
+                signupBtn.textContent = 'Create Test Account';
+                signupBtn.disabled = false;
+            }
+        });
+        
+        addLog('🔥 Simple Firebase signup test loaded');
+        addLog('👆 Click "Create Test Account" to start testing');
+    </script>
+</body>
+</html>

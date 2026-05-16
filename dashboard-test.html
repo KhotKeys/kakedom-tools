@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Test</title>
+</head>
+<body>
+    <h1>Dashboard Functionality Test</h1>
+    
+    <div>
+        <h3>User Info Test:</h3>
+        <p>Name: <span id="user-name">Loading...</span></p>
+        <p>Role: <span id="user-role">Loading...</span></p>
+        <button id="logout-btn">Logout</button>
+    </div>
+
+    <div>
+        <h3>Firebase Test:</h3>
+        <p id="firebase-status">Testing...</p>
+    </div>
+
+    <div>
+        <h3>Console Output:</h3>
+        <div id="console-output" style="background: #f0f0f0; padding: 10px; height: 300px; overflow-y: scroll;"></div>
+    </div>
+
+    <script type="module">
+        // Capture console logs
+        const consoleOutput = document.getElementById('console-output');
+        const originalLog = console.log;
+        const originalError = console.error;
+        
+        function appendLog(message, type = 'log') {
+            const div = document.createElement('div');
+            div.style.color = type === 'error' ? 'red' : 'black';
+            div.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            consoleOutput.appendChild(div);
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+        }
+        
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            appendLog(args.join(' '), 'log');
+        };
+        
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            appendLog('ERROR: ' + args.join(' '), 'error');
+        };
+
+        // Test Firebase initialization
+        async function testFirebase() {
+            try {
+                console.log('🚀 Starting Firebase test...');
+                
+                const { initializeApp } = await import("https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js");
+                const { getAuth, onAuthStateChanged } = await import("https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js");
+                
+                const firebaseConfig = {
+                    apiKey: "AIzaSyBOJSo0b_AN4HB7wHVN8ERAAgGkilTnZWk",
+                    authDomain: "cmua-7957a.firebaseapp.com",
+                    databaseURL: "https://cmua-7957a-default-rtdb.firebaseio.com",
+                    projectId: "cmua-7957a",
+                    storageBucket: "cmua-7957a.appspot.com",
+                    messagingSenderId: "273566170303",
+                    appId: "1:273566170303:web:3d02105c5dd0e15e251a0a",
+                    measurementId: "G-0T0Q0TP91N"
+                };
+                
+                console.log('🔧 Initializing Firebase app...');
+                const app = initializeApp(firebaseConfig);
+                const auth = getAuth(app);
+                
+                console.log('✅ Firebase initialized successfully');
+                document.getElementById('firebase-status').textContent = 'Firebase OK';
+                
+                // Test auth state
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        console.log('✅ User logged in:', user.email);
+                        document.getElementById('user-name').textContent = user.email || 'Unknown';
+                        document.getElementById('user-role').textContent = 'Authenticated';
+                    } else {
+                        console.log('❌ No user logged in');
+                        document.getElementById('user-name').textContent = 'Not logged in';
+                        document.getElementById('user-role').textContent = 'Guest';
+                    }
+                });
+                
+                // Test logout button
+                const logoutBtn = document.getElementById('logout-btn');
+                logoutBtn.addEventListener('click', async () => {
+                    console.log('🔓 Logout clicked');
+                    try {
+                        const { signOut } = await import("https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js");
+                        await signOut(auth);
+                        console.log('✅ Logout successful');
+                        localStorage.clear();
+                        alert('Logged out successfully!');
+                    } catch (error) {
+                        console.error('❌ Logout error:', error);
+                        localStorage.clear();
+                        alert('Logout completed (with local cleanup)');
+                    }
+                });
+                
+            } catch (error) {
+                console.error('❌ Firebase test failed:', error);
+                document.getElementById('firebase-status').textContent = 'Firebase Error: ' + error.message;
+            }
+        }
+
+        // Start test
+        testFirebase();
+    </script>
+</body>
+</html>

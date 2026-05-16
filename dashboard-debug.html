@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Debug Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        button {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #218838; }
+        .log {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .user-profile {
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .profile-item {
+            margin: 5px 0;
+            padding: 5px;
+            background: white;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🔍 Dashboard Debug Test</h1>
+        <p>This will help diagnose profile loading and logout issues</p>
+        
+        <div>
+            <button onclick="testFirebaseInit()">1. Test Firebase Init</button>
+            <button onclick="testAuthState()">2. Test Auth State</button>
+            <button onclick="testUserProfile()">3. Test User Profile</button>
+            <button onclick="testLogout()">4. Test Logout</button>
+            <button onclick="clearLog()">Clear Log</button>
+        </div>
+
+        <div id="status" class="status info">
+            <strong>Status:</strong> Ready to test dashboard functionality
+        </div>
+
+        <div class="user-profile">
+            <h3>🧑‍💼 Current User Profile:</h3>
+            <div class="profile-item"><strong>Name:</strong> <span id="current-name">Not loaded</span></div>
+            <div class="profile-item"><strong>Email:</strong> <span id="current-email">Not loaded</span></div>
+            <div class="profile-item"><strong>Role:</strong> <span id="current-role">Not loaded</span></div>
+            <div class="profile-item"><strong>Auth Status:</strong> <span id="auth-status">Unknown</span></div>
+            <div class="profile-item"><strong>LocalStorage:</strong> <span id="localStorage-status">Not checked</span></div>
+        </div>
+
+        <h3>Console Log:</h3>
+        <div id="log" class="log">Click buttons above to start testing...\n</div>
+    </div>
+
+    <script type="module">
+        let logElement = document.getElementById('log');
+        let statusElement = document.getElementById('status');
+        let auth, db;
+
+        function addLog(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            logElement.textContent += `[${timestamp}] ${message}\n`;
+            logElement.scrollTop = logElement.scrollHeight;
+            console.log(`[DASHBOARD DEBUG] ${message}`);
+        }
+
+        function setStatus(message, type = 'info') {
+            const statusClass = type === 'success' ? 'success' : type === 'error' ? 'error' : 'info';
+            statusElement.innerHTML = `<div class="status ${statusClass}"><strong>Status:</strong> ${message}</div>`;
+        }
+
+        function updateProfileDisplay(userData, authUser) {
+            document.getElementById('current-name').textContent = userData?.fullName || userData?.firstName || 'Not available';
+            document.getElementById('current-email').textContent = userData?.email || authUser?.email || 'Not available';
+            document.getElementById('current-role').textContent = userData?.role || 'Not available';
+            document.getElementById('auth-status').textContent = authUser ? 'Authenticated' : 'Not authenticated';
+            
+            const savedUser = localStorage.getItem('sf_user');
+            document.getElementById('localStorage-status').textContent = savedUser ? 'Data found' : 'No data';
+        }
+
+        window.clearLog = function() {
+            logElement.textContent = 'Log cleared...\n';
+        }
+
+        window.testFirebaseInit = async function() {
+            addLog('🔥 Testing Firebase Initialization...');
+            setStatus('Testing Firebase initialization...', 'info');
+            
+            try {
+                const { initializeApp } = await import("https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js");
+                const { getAuth } = await import("https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js");
+                const { getFirestore } = await import("https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js");
+                
+                const firebaseConfig = {
+                    apiKey: "AIzaSyBOJSo0b_AN4HB7wHVN8ERAAgGkilTnZWk",
+                    authDomain: "cmua-7957a.firebaseapp.com",
+                    databaseURL: "https://cmua-7957a-default-rtdb.firebaseio.com",
+                    projectId: "cmua-7957a",
+                    storageBucket: "cmua-7957a.appspot.com",
+                    messagingSenderId: "273566170303",
+                    appId: "1:273566170303:web:3d02105c5dd0e15e251a0a",
+                    measurementId: "G-0T0Q0TP91N"
+                };
+                
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+                
+                addLog('✅ Firebase initialized successfully');
+                addLog(`🏗️ Project: ${firebaseConfig.projectId}`);
+                addLog(`🔐 Auth initialized: ${!!auth}`);
+                addLog(`🗄️ Firestore initialized: ${!!db}`);
+                
+                setStatus('Firebase initialization successful!', 'success');
+                
+            } catch (error) {
+                addLog('❌ Firebase initialization failed: ' + error.message);
+                setStatus('Firebase initialization failed: ' + error.message, 'error');
+            }
+        }
+
+        window.testAuthState = async function() {
+            addLog('👤 Testing Authentication State...');
+            setStatus('Testing authentication state...', 'info');
+            
+            if (!auth) {
+                addLog('❌ Firebase not initialized. Run test 1 first.');
+                setStatus('Firebase not initialized', 'error');
+                return;
+            }
+            
+            try {
+                const { onAuthStateChanged } = await import("https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js");
+                
+                addLog('🔍 Checking current auth state...');
+                
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        addLog('✅ User is authenticated!');
+                        addLog(`📧 Email: ${user.email}`);
+                        addLog(`🆔 UID: ${user.uid}`);
+                        addLog(`📛 Display Name: ${user.displayName || 'Not set'}`);
+                        updateProfileDisplay(null, user);
+                        setStatus('User is authenticated', 'success');
+                    } else {
+                        addLog('❌ No user is currently authenticated');
+                        updateProfileDisplay(null, null);
+                        setStatus('No user authenticated', 'error');
+                    }
+                });
+                
+                // Also check current user immediately
+                const currentUser = auth.currentUser;
+                if (currentUser) {
+                    addLog('📋 Current user found immediately');
+                    addLog(`📧 Current user email: ${currentUser.email}`);
+                } else {
+                    addLog('⏳ No immediate current user, waiting for auth state change...');
+                }
+                
+            } catch (error) {
+                addLog('❌ Authentication state test failed: ' + error.message);
+                setStatus('Authentication test failed: ' + error.message, 'error');
+            }
+        }
+
+        window.testUserProfile = async function() {
+            addLog('👤 Testing User Profile Loading...');
+            setStatus('Testing user profile loading...', 'info');
+            
+            if (!auth || !db) {
+                addLog('❌ Firebase not initialized. Run test 1 first.');
+                setStatus('Firebase not initialized', 'error');
+                return;
+            }
+            
+            const user = auth.currentUser;
+            if (!user) {
+                addLog('❌ No authenticated user. You need to login first.');
+                setStatus('No authenticated user', 'error');
+                return;
+            }
+            
+            try {
+                const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js");
+                
+                addLog(`🔍 Fetching user document for UID: ${user.uid}`);
+                
+                const userDoc = await getDoc(doc(db, 'users', user.uid));
+                
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    addLog('✅ User document found in Firestore!');
+                    addLog(`📛 Full Name: ${userData.fullName || 'Not set'}`);
+                    addLog(`📧 Email: ${userData.email || 'Not set'}`);
+                    addLog(`🎭 Role: ${userData.role || 'Not set'}`);
+                    addLog(`📍 Location: ${userData.location || 'Not set'}`);
+                    addLog(`📞 Phone: ${userData.phone || 'Not set'}`);
+                    
+                    // Update localStorage
+                    const completeUserData = {
+                        ...userData,
+                        email: user.email,
+                        uid: user.uid
+                    };
+                    localStorage.setItem('sf_user', JSON.stringify(completeUserData));
+                    addLog('💾 User data saved to localStorage');
+                    
+                    updateProfileDisplay(completeUserData, user);
+                    setStatus('User profile loaded successfully!', 'success');
+                    
+                } else {
+                    addLog('❌ User document not found in Firestore');
+                    addLog('📝 This means the account was created but user data was not saved properly');
+                    
+                    // Create fallback user data
+                    const fallbackData = {
+                        fullName: user.displayName || 'User',
+                        email: user.email,
+                        uid: user.uid,
+                        role: 'farmer'
+                    };
+                    
+                    updateProfileDisplay(fallbackData, user);
+                    setStatus('User document not found in Firestore', 'error');
+                }
+                
+            } catch (error) {
+                addLog('❌ Profile loading failed: ' + error.message);
+                setStatus('Profile loading failed: ' + error.message, 'error');
+            }
+        }
+
+        window.testLogout = async function() {
+            addLog('🚪 Testing Logout Functionality...');
+            setStatus('Testing logout...', 'info');
+            
+            if (!auth) {
+                addLog('❌ Firebase not initialized. Run test 1 first.');
+                setStatus('Firebase not initialized', 'error');
+                return;
+            }
+            
+            try {
+                const { signOut } = await import("https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js");
+                
+                const user = auth.currentUser;
+                if (!user) {
+                    addLog('⚠️ No user is currently signed in');
+                    setStatus('No user to sign out', 'info');
+                    return;
+                }
+                
+                addLog(`🔓 Signing out user: ${user.email}`);
+                await signOut(auth);
+                addLog('✅ Firebase signOut successful');
+                
+                // Clear localStorage
+                localStorage.clear();
+                addLog('🧹 localStorage cleared');
+                
+                // Check auth state after logout
+                setTimeout(() => {
+                    const currentUser = auth.currentUser;
+                    if (currentUser) {
+                        addLog('❌ User still authenticated after logout!');
+                        setStatus('Logout failed - user still authenticated', 'error');
+                    } else {
+                        addLog('✅ User successfully signed out');
+                        updateProfileDisplay(null, null);
+                        setStatus('Logout successful!', 'success');
+                    }
+                }, 1000);
+                
+            } catch (error) {
+                addLog('❌ Logout failed: ' + error.message);
+                setStatus('Logout failed: ' + error.message, 'error');
+            }
+        }
+
+        // Auto-initialize Firebase on page load
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                addLog('🚀 Auto-initializing Firebase...');
+                window.testFirebaseInit().then(() => {
+                    setTimeout(() => {
+                        window.testAuthState();
+                    }, 1000);
+                });
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
