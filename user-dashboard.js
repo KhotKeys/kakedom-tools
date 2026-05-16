@@ -229,7 +229,7 @@ async function initDashboard() {
         const { getFirestore } = await import("https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js");
         
         const firebaseConfig = {
-            apiKey: "AIzaSyBOJSo0b_AN4HB7wHVN8ERAAgGkilTnZWk",
+            apiKey: "YOUR_FIREBASE_API_KEY",
             authDomain: "cmua-7957a.firebaseapp.com",
             databaseURL: "https://cmua-7957a-default-rtdb.firebaseio.com",
             projectId: "cmua-7957a",
