@@ -4,75 +4,442 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Soil Monitoring - Käkedom Tools</title>
-    <!--favicon-->
     <link rel="icon" type="image/jpeg" href="images/logo.jpeg">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="user-dashboard.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* ── SIDEBAR OVERLAY ── */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 998;
+        }
+        .sidebar-overlay.open { display: block; }
+
+        /* ── HAMBURGER ── */
+        .hamburger-btn {
+            display: none;
+            background: var(--primary-green, #2e7d32);
+            border: none;
+            border-radius: 8px;
+            width: 38px;
+            height: 38px;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        /* ── HEADER FIX — stop name and button colliding ── */
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: nowrap;
+            overflow: hidden;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .user-details {
+            min-width: 0;
+        }
+
+        .user-details h4 {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 160px;
+        }
+
+        .header-actions {
+            flex-shrink: 0;
+        }
+
+        /* ── SENSOR CARDS LIVE ── */
+        .soil-live-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #e8f5e8;
+            border: 1px solid #c8e0c8;
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 11px;
+            color: #2e7d32;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .soil-live-dot {
+            width: 6px;
+            height: 6px;
+            background: #4caf50;
+            border-radius: 50%;
+            animation: blink 1.8s infinite;
+        }
+
+        @keyframes blink {
+            0%,100% { opacity: 1; }
+            50%      { opacity: 0.3; }
+        }
+
+        .soil-detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .soil-detail-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            border: 1px solid #e8f0e8;
+        }
+
+        .soil-detail-card h4 {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .soil-detail-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2e7d32;
+            line-height: 1;
+        }
+
+        .soil-detail-unit {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #888;
+            margin-left: 4px;
+        }
+
+        .soil-detail-status {
+            margin-top: 0.5rem;
+            font-size: 12px;
+            padding: 3px 10px;
+            border-radius: 10px;
+            display: inline-block;
+            font-weight: 500;
+        }
+
+        .status-good    { background: #e8f5e8; color: #2e7d32; }
+        .status-warning { background: #fff3e0; color: #e65100; }
+        .status-bad     { background: #fce8e8; color: #c62828; }
+
+        .soil-bar {
+            height: 6px;
+            background: #e8f0e8;
+            border-radius: 3px;
+            margin-top: 0.75rem;
+            overflow: hidden;
+        }
+
+        .soil-bar-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.8s ease;
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 768px) {
+            .hamburger-btn { display: flex; }
+
+            .sidebar {
+                position: fixed !important;
+                left: -280px !important;
+                top: 0; bottom: 0;
+                z-index: 999;
+                transition: left 0.28s cubic-bezier(.4,0,.2,1);
+                width: 260px !important;
+                overflow-y: auto;
+            }
+
+            .sidebar.open { left: 0 !important; }
+
+            .main-content {
+                width: 100% !important;
+                margin-left: 0 !important;
+            }
+
+            .dashboard-container { flex-direction: column; }
+
+            .impact-grid {
+                grid-template-columns: 1fr 1fr !important;
+            }
+
+            .soil-detail-grid {
+                grid-template-columns: 1fr !important;
+            }
+
+            .user-details h4 { max-width: 100px; }
+        }
+
+        @media (max-width: 480px) {
+            .impact-grid { grid-template-columns: 1fr !important; }
+            .header-content { gap: 8px; }
+            .btn-logout span { display: none; }
+        }
+
+        @media (min-width: 1400px) {
+            .soil-detail-grid { grid-template-columns: repeat(4, 1fr); }
+        }
+    </style>
 </head>
 <body>
-    <div class="dashboard-container">
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <h3><img src="images/logo.jpeg" alt="Käkedom Tools Logo" class="dashboard-logo-img"> Käkedom Tools</h3>
-            </div>
-            <nav class="sidebar-menu">
-                <ul>
-                    <li><a href="user-dashboard.html" title="Dashboard"><i class="fas fa-th-large"></i><span>Dashboard</span></a></li>
-                    <li><a href="soil-monitoring.html" title="Soil Monitoring" class="active"><i class="fas fa-seedling"></i><span>Soil Monitoring</span></a></li>
-                    <li><a href="weather.html" title="Weather"><i class="fas fa-cloud-sun"></i><span>Weather</span></a></li>
-                    <li><a href="yield-prediction.html" title="Yield Prediction"><i class="fas fa-chart-line"></i><span>Yield Prediction</span></a></li>
-                    <li><a href="water-management.html" title="Water Management"><i class="fas fa-tint"></i><span>Water Management</span></a></li>
-                    <li><a href="learning.html" title="Learning"><i class="fas fa-book-open"></i><span>Learning</span></a></li>
-                    <li><a href="seed-bank.html" title="Seed Bank"><i class="fas fa-hand-holding-seedling"></i><span>Seed Bank</span></a></li>
-                    <li><a href="resource-sharing.html" title="Resource Sharing"><i class="fas fa-share-alt"></i><span>Resource Sharing</span></a></li>
-                    <li><a href="index.html" title="Landing Page"><i class="fas fa-home"></i><span>Home</span></a></li>
-                </ul>
-            </nav>
-        </aside>
-        <div class="main-content">
-            <header class="header">
-                <div class="header-content">
-                    <div class="user-profile">
-                        <img src="./images/africa_numbers_cover.jpg" alt="User Avatar" class="avatar">
-                        <div class="user-details">
-                            <h4 id="user-name">Loading...</h4>
-                            <small id="user-role">Farmer</small>
-                        </div>
-                    </div>
-                    <div class="header-actions">
-                        <button class="btn btn-logout" id="logout-btn">
-                            <i class="fas fa-sign-out-alt"></i>
-                            <span>Logout</span>
-                        </button>
-                    </div>
-                </div>
-            </header>
-            <main class="main-container">
-                <div class="dashboard-header animate-fade-in-up">
-                    <h2>Soil Monitoring</h2>
-                    <p>Monitor soil health, pH, moisture, and nutrients. (Feature coming soon!)</p>
-                </div>
-                <div class="impact-grid animate-fade-in-up" style="animation-delay: 0.2s;">
-                    <div class="impact-card">
-                        <span class="impact-number">--</span>
-                        <h3>Soil pH Level</h3>
-                        <p>Optimal range: 6.5-7.5</p>
-                    </div>
-                    <div class="impact-card">
-                        <span class="impact-number">--</span>
-                        <h3>Soil Moisture</h3>
-                        <p>Optimal range: 50-70%</p>
-                    </div>
-                    <div class="impact-card">
-                        <span class="impact-number">--</span>
-                        <h3>Nutrient Levels</h3>
-                        <p>Feature coming soon</p>
-                    </div>
-                </div>
-            </main>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<div class="dashboard-container">
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3>
+                <img src="images/logo.jpeg" alt="Käkedom Tools Logo" class="dashboard-logo-img">
+                Käkedom Tools
+            </h3>
         </div>
+        <nav class="sidebar-menu">
+            <ul>
+                <li><a href="user-dashboard.html"><i class="fas fa-th-large"></i><span>Dashboard</span></a></li>
+                <li><a href="soil-monitoring.html" class="active"><i class="fas fa-seedling"></i><span>Soil Monitoring</span></a></li>
+                <li><a href="weather.html"><i class="fas fa-cloud-sun"></i><span>Weather</span></a></li>
+                <li><a href="yield-prediction.html"><i class="fas fa-chart-line"></i><span>Yield Prediction</span></a></li>
+                <li><a href="water-management.html"><i class="fas fa-tint"></i><span>Water Management</span></a></li>
+                <li><a href="learning.html"><i class="fas fa-book-open"></i><span>Learning</span></a></li>
+                <li><a href="seed-bank.html"><i class="fas fa-hand-holding-seedling"></i><span>Seed Bank</span></a></li>
+                <li><a href="resource-sharing.html"><i class="fas fa-share-alt"></i><span>Resource Sharing</span></a></li>
+                <li><a href="index.html"><i class="fas fa-home"></i><span>Home</span></a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <div class="main-content">
+        <header class="header">
+            <div class="header-content">
+                <button class="hamburger-btn" id="hamburgerBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="user-profile">
+                    <img src="./images/africa_numbers_cover.jpg" alt="User Avatar" class="avatar">
+                    <div class="user-details">
+                        <h4 id="user-name">Loading...</h4>
+                        <small id="user-role">Farmer</small>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-logout" id="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-container">
+            <div class="dashboard-header animate-fade-in-up">
+                <h2>Soil Monitoring</h2>
+                <p>Live soil health readings from your IoT sensors in Kiryandongo.</p>
+            </div>
+
+            <div class="soil-live-badge">
+                <div class="soil-live-dot"></div>
+                Live sensor data
+            </div>
+
+            <!-- Summary Cards -->
+            <div class="impact-grid animate-fade-in-up" style="animation-delay:0.2s;">
+                <div class="impact-card">
+                    <span class="impact-number" id="ph-summary">--</span>
+                    <h3>Soil pH Level</h3>
+                    <p>Optimal range: 6.5 - 7.5</p>
+                </div>
+                <div class="impact-card">
+                    <span class="impact-number" id="moisture-summary">--</span>
+                    <h3>Soil Moisture</h3>
+                    <p>Optimal range: 50 - 70%</p>
+                </div>
+                <div class="impact-card">
+                    <span class="impact-number" id="temp-summary">--</span>
+                    <h3>Temperature</h3>
+                    <p>Optimal range: 22 - 28°C</p>
+                </div>
+                <div class="impact-card">
+                    <span class="impact-number" id="humidity-summary">--</span>
+                    <h3>Air Humidity</h3>
+                    <p>Optimal range: 60 - 80%</p>
+                </div>
+            </div>
+
+            <!-- Detailed Cards -->
+            <div class="soil-detail-grid animate-fade-in-up" style="animation-delay:0.3s;">
+
+                <div class="soil-detail-card">
+                    <h4>Soil pH</h4>
+                    <div>
+                        <span class="soil-detail-value" id="ph-val">--</span>
+                        <span class="soil-detail-unit">pH</span>
+                    </div>
+                    <div class="soil-bar">
+                        <div class="soil-bar-fill" id="ph-bar" style="width:0%;background:#5e8d83;"></div>
+                    </div>
+                    <span class="soil-detail-status" id="ph-status">Loading...</span>
+                    <p style="font-size:12px;color:#888;margin-top:8px;">Healthy range: 6.0 - 7.5</p>
+                </div>
+
+                <div class="soil-detail-card">
+                    <h4>Soil Moisture</h4>
+                    <div>
+                        <span class="soil-detail-value" id="mst-val">--</span>
+                        <span class="soil-detail-unit">%</span>
+                    </div>
+                    <div class="soil-bar">
+                        <div class="soil-bar-fill" id="mst-bar" style="width:0%;background:#3a9bd5;"></div>
+                    </div>
+                    <span class="soil-detail-status" id="mst-status">Loading...</span>
+                    <p style="font-size:12px;color:#888;margin-top:8px;">Healthy range: 50 - 70%</p>
+                </div>
+
+                <div class="soil-detail-card">
+                    <h4>Soil Temperature</h4>
+                    <div>
+                        <span class="soil-detail-value" id="tmp-val">--</span>
+                        <span class="soil-detail-unit">°C</span>
+                    </div>
+                    <div class="soil-bar">
+                        <div class="soil-bar-fill" id="tmp-bar" style="width:0%;background:#e57373;"></div>
+                    </div>
+                    <span class="soil-detail-status" id="tmp-status">Loading...</span>
+                    <p style="font-size:12px;color:#888;margin-top:8px;">Healthy range: 22 - 28°C</p>
+                </div>
+
+                <div class="soil-detail-card">
+                    <h4>Air Humidity</h4>
+                    <div>
+                        <span class="soil-detail-value" id="hum-val">--</span>
+                        <span class="soil-detail-unit">%</span>
+                    </div>
+                    <div class="soil-bar">
+                        <div class="soil-bar-fill" id="hum-bar" style="width:0%;background:#64b5f6;"></div>
+                    </div>
+                    <span class="soil-detail-status" id="hum-status">Loading...</span>
+                    <p style="font-size:12px;color:#888;margin-top:8px;">Healthy range: 60 - 80%</p>
+                </div>
+
+            </div>
+        </main>
     </div>
-    <script src="script.js" type="module"></script>
+</div>
+
+<script>
+// ── SIDEBAR MOBILE ──
+var hamburgerBtn  = document.getElementById('hamburgerBtn');
+var sidebarEl     = document.getElementById('sidebar');
+var overlayEl     = document.getElementById('sidebarOverlay');
+
+hamburgerBtn.addEventListener('click', function() {
+    sidebarEl.classList.add('open');
+    overlayEl.classList.add('open');
+    document.body.style.overflow = 'hidden';
+});
+
+overlayEl.addEventListener('click', function() {
+    sidebarEl.classList.remove('open');
+    overlayEl.classList.remove('open');
+    document.body.style.overflow = '';
+});
+
+// ── FIREBASE SENSOR DATA ──
+var FIREBASE_URL = "https://cmua-7957a-default-rtdb.firebaseio.com/smart_agriculture.json";
+
+function getStatus(key, val) {
+    if (key === "ph") {
+        if (val < 6.0) return { label: "Too Acidic — Add organic manure", cls: "status-bad" };
+        if (val > 7.5) return { label: "Too Alkaline — Add compost", cls: "status-warning" };
+        return { label: "Healthy pH Level", cls: "status-good" };
+    }
+    if (key === "moisture") {
+        if (val < 30) return { label: "Very Dry — Water crops now", cls: "status-bad" };
+        if (val < 50) return { label: "Slightly Dry — Water soon", cls: "status-warning" };
+        if (val > 70) return { label: "Too Wet — Stop watering", cls: "status-warning" };
+        return { label: "Good Moisture Level", cls: "status-good" };
+    }
+    if (key === "temp") {
+        if (val > 35) return { label: "Too Hot — Water early morning", cls: "status-bad" };
+        if (val < 18) return { label: "Too Cold — Protect crops", cls: "status-warning" };
+        return { label: "Good Temperature", cls: "status-good" };
+    }
+    if (key === "humidity") {
+        if (val < 40) return { label: "Very Dry Air — Watch for stress", cls: "status-bad" };
+        if (val > 80) return { label: "High Humidity — Watch for fungal risk", cls: "status-warning" };
+        return { label: "Good Humidity Level", cls: "status-good" };
+    }
+    return { label: "Reading...", cls: "status-good" };
+}
+
+function updateUI(data) {
+    // Summary cards
+    document.getElementById('ph-summary').textContent      = data.soil_ph;
+    document.getElementById('moisture-summary').textContent = data.soil_moisture_percent + '%';
+    document.getElementById('temp-summary').textContent     = data.temperature_C + '°C';
+    document.getElementById('humidity-summary').textContent = data.humidity_percent + '%';
+
+    // Detail cards
+    document.getElementById('ph-val').textContent  = data.soil_ph;
+    document.getElementById('mst-val').textContent = data.soil_moisture_percent;
+    document.getElementById('tmp-val').textContent = data.temperature_C;
+    document.getElementById('hum-val').textContent = data.humidity_percent;
+
+    // Bars
+    document.getElementById('ph-bar').style.width  = Math.min(100, (data.soil_ph / 14) * 100) + '%';
+    document.getElementById('mst-bar').style.width  = Math.min(100, data.soil_moisture_percent) + '%';
+    document.getElementById('tmp-bar').style.width  = Math.min(100, (data.temperature_C / 50) * 100) + '%';
+    document.getElementById('hum-bar').style.width  = Math.min(100, data.humidity_percent) + '%';
+
+    // Status labels
+    var phS  = getStatus("ph",       data.soil_ph);
+    var mstS = getStatus("moisture", data.soil_moisture_percent);
+    var tmpS = getStatus("temp",     data.temperature_C);
+    var humS = getStatus("humidity", data.humidity_percent);
+
+    document.getElementById('ph-status').textContent  = phS.label;
+    document.getElementById('ph-status').className    = 'soil-detail-status ' + phS.cls;
+    document.getElementById('mst-status').textContent = mstS.label;
+    document.getElementById('mst-status').className   = 'soil-detail-status ' + mstS.cls;
+    document.getElementById('tmp-status').textContent = tmpS.label;
+    document.getElementById('tmp-status').className   = 'soil-detail-status ' + tmpS.cls;
+    document.getElementById('hum-status').textContent = humS.label;
+    document.getElementById('hum-status').className   = 'soil-detail-status ' + humS.cls;
+}
+
+function loadSensors() {
+    fetch(FIREBASE_URL)
+        .then(function(r) { return r.json(); })
+        .then(function(data) { if (data) updateUI(data); })
+        .catch(function(e) { console.error('Sensor error:', e); });
+}
+
+loadSensors();
+setInterval(loadSensors, 30000);
+</script>
+
+<script src="script.js" type="module"></script>
 </body>
-</html> 
+</html>

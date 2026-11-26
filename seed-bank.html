@@ -49,11 +49,13 @@
             background: var(--dark-green);
         }
     </style>
+    <link rel="stylesheet" href="dashboard-responsive.css">
 </head>
 <body>
     <div class="dashboard-container">
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
         <!-- Sidebar -->
-        <aside class="sidebar">
+        <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <h3><img src="images/logo.jpeg" alt="Käkedom Tools Logo" class="dashboard-logo-img"> Käkedom Tools</h3>
             </div>
@@ -65,7 +67,7 @@
                     <li><a href="yield-prediction.html" title="Yield Prediction"><i class="fas fa-chart-line"></i><span>Yield Prediction</span></a></li>
                     <li><a href="water-management.html" title="Water Management"><i class="fas fa-tint"></i><span>Water Management</span></a></li>
                     <li><a href="learning.html" title="Learning"><i class="fas fa-book-open"></i><span>Learning</span></a></li>
-                    <li><a href="seed-bank.html" title="Seed Bank"><i class="fas fa-hand-holding-seedling"></i><span>Seed Bank</span></a></li>
+                    <li><a href="seed-bank.html" class="active" title="Seed Bank"><i class="fas fa-hand-holding-seedling"></i><span>Seed Bank</span></a></li>
                     <li><a href="resource-sharing.html" title="Resource Sharing"><i class="fas fa-share-alt"></i><span>Resource Sharing</span></a></li>
                     <li><a href="index.html" title="Landing Page"><i class="fas fa-home"></i><span>Home</span></a></li>
                 </ul>
@@ -76,6 +78,7 @@
         <div class="main-content">
             <header class="header">
                  <div class="header-content">
+                    <button class="hamburger-btn" id="hamburgerBtn" type="button" aria-label="Open menu" aria-expanded="false"><i class="fas fa-bars"></i></button>
                     <div class="user-profile">
                         <img src="./images/africa_numbers_cover.jpg" alt="User Avatar" class="avatar">
                         <div class="user-details">
@@ -165,6 +168,7 @@
             </main>
         </div>
     </div>
+    <script src="dashboard-responsive.js"></script>
     <script src="script.js" type="module"></script>
 </body>
 </html> 
