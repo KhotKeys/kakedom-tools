@@ -10,11 +10,13 @@
     <link rel="stylesheet" href="user-dashboard.css">
     <link rel="stylesheet" href="admin-dashboard.css"> <!-- Reusing styles -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="dashboard-responsive.css">
 </head>
 <body>
     <div class="dashboard-container">
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
         <!-- Sidebar -->
-        <aside class="sidebar">
+        <aside class="sidebar" id="sidebar">
              <div class="sidebar-header">
                 <h3><img src="images/logo.jpeg" alt="Käkedom Tools Logo" class="dashboard-logo-img"> Käkedom Tools</h3>
             </div>
@@ -23,7 +25,7 @@
                     <li><a href="user-dashboard.html" title="Dashboard"><i class="fas fa-th-large"></i><span>Dashboard</span></a></li>
                     <li><a href="soil-monitoring.html" title="Soil Monitoring"><i class="fas fa-seedling"></i><span>Soil Monitoring</span></a></li>
                     <li><a href="weather.html" title="Weather"><i class="fas fa-cloud-sun"></i><span>Weather</span></a></li>
-                    <li><a href="yield-prediction.html" title="Yield Prediction"><i class="fas fa-chart-line"></i><span>Yield Prediction</span></a></li>
+                    <li><a href="yield-prediction.html" class="active" title="Yield Prediction"><i class="fas fa-chart-line"></i><span>Yield Prediction</span></a></li>
                     <li><a href="water-management.html" title="Water Management"><i class="fas fa-tint"></i><span>Water Management</span></a></li>
                     <li><a href="learning.html" title="Learning"><i class="fas fa-book-open"></i><span>Learning</span></a></li>
                     <li><a href="seed-bank.html" title="Seed Bank"><i class="fas fa-hand-holding-seedling"></i><span>Seed Bank</span></a></li>
@@ -37,6 +39,7 @@
         <div class="main-content">
             <header class="header">
                  <div class="header-content">
+                    <button class="hamburger-btn" id="hamburgerBtn" type="button" aria-label="Open menu" aria-expanded="false"><i class="fas fa-bars"></i></button>
                     <div class="user-profile">
                         <img src="./images/africa_numbers_cover.jpg" alt="User Avatar" class="avatar">
                         <div class="user-details">
@@ -99,6 +102,7 @@
             </main>
         </div>
     </div>
+    <script src="dashboard-responsive.js"></script>
     <script src="script.js" type="module"></script>
 </body>
 </html> 

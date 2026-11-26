@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Käkedom Farming Assistant</title>
+<link rel="icon" type="image/jpeg" href="images/logo.jpeg">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="kakedom-style.css">
+</head>
+<body>
+
+<!-- SETTINGS MODAL -->
+<div class="modal-overlay" id="settingsModal">
+  <div class="modal" role="dialog" aria-modal="true" aria-label="Settings">
+    <div class="modal-header">
+      <h2>Settings</h2>
+      <button class="modal-close" id="modalCloseBtn" aria-label="Close settings">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-field">
+        <label for="settingsFirebaseUrl">Firebase Database URL</label>
+        <input type="text" id="settingsFirebaseUrl" value="https://cmua-7957a-default-rtdb.firebaseio.com"/>
+        <div class="field-hint">The real-time database where your IoT sensor data is stored.</div>
+      </div>
+      <!-- API key hidden — managed by admin only -->
+      <input type="hidden" id="settingsApiKey" value=""/>
+    </div>
+    <div class="modal-info">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      Changes apply immediately after saving.
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" id="modalCancelBtn">Cancel</button>
+      <button class="btn-save" id="modalSaveBtn">Save Settings</button>
+    </div>
+  </div>
+</div>
+
+<!-- SIDEBAR TOGGLE (mobile) -->
+<button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle menu">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+</button>
+
+<!-- SIDEBAR BACKDROP (mobile) -->
+<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-img">
+        <img src="images/logo.jpeg" alt="Käkedom Tools logo" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+      <span class="logo-fallback" style="display:none;">K</span>
+    </div>
+    <div class="logo-text-wrap">
+      <div class="logo-title">Käkedom Tools</div>
+      <div class="logo-sub">Farming Assistant &middot; AI</div>
+    </div>
+    <button class="sidebar-close-btn" id="sidebarCloseBtn" aria-label="Close menu">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+
+  <div class="sidebar-section">Current Session</div>
+  <div class="chat-item active">
+    <div class="chat-item-title">My Farm Analysis</div>
+    <div class="chat-item-meta">Live soil data &middot; Today</div>
+  </div>
+
+  <div class="sidebar-section">Features</div>
+  <div class="chat-item" data-feature="Crop Planner">
+    <div class="chat-item-title">Crop Planner</div>
+    <div class="chat-item-meta">Plan your next season</div>
+  </div>
+  <div class="chat-item" data-feature="Pest & Disease">
+    <div class="chat-item-title">Pest &amp; Disease</div>
+    <div class="chat-item-meta">Identify and treat issues</div>
+  </div>
+  <div class="chat-item" data-feature="Water Management">
+    <div class="chat-item-title">Water Management</div>
+    <div class="chat-item-meta">Irrigation scheduling</div>
+  </div>
+  <div class="chat-item" data-feature="Yield Forecast">
+    <div class="chat-item-title">Yield Forecast</div>
+    <div class="chat-item-meta">Predict your harvest</div>
+  </div>
+  <div class="chat-item" data-feature="Market Prices">
+    <div class="chat-item-title">Market Prices</div>
+    <div class="chat-item-meta">Local crop market rates</div>
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="live-badge">
+      <div class="live-dot"></div>
+      IoT Sensors Active
+    </div>
+    <div class="footer-location">Kiryandongo Refugee Settlement, Uganda</div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <button class="topbar-menu-btn" id="topbarMenuBtn" aria-label="Open menu">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div class="topbar-info">
+      <div class="topbar-title">My Farm Analysis</div>
+      <div class="topbar-sub">Real-time soil monitoring &middot; Claude AI</div>
+    </div>
+    <div class="topbar-right">
+      <button class="icon-btn" id="refreshBtn" title="Refresh sensors" aria-label="Refresh sensors">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="23 4 23 10 17 10"></polyline>
+          <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+        </svg>
+      </button>
+      <button class="icon-btn" id="settingsBtn" title="Settings" aria-label="Open settings">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Sensor Strip -->
+  <div class="sensor-strip" id="sensorPanel">
+    <div class="sensor-loading-strip">Connecting to IoT sensors...</div>
+  </div>
+
+  <!-- Chat -->
+  <div class="chat-wrap" id="chatContainer">
+    <div class="date-divider"><span>TODAY</span></div>
+    <div class="msg-row ai">
+      <div class="msg-avatar ai">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M12 2C8.5 2 5 5.5 5 9.5c0 5.5 7 12.5 7 12.5s7-7 7-12.5C19 5.5 15.5 2 12 2z"/></svg>
+      </div>
+      <div class="msg-body">
+        <div class="bubble ai">
+          <strong>Welcome to Käkedom Farming Assistant.</strong><br><br>
+          I am reading live data from your IoT soil sensors. Ask me anything about your farm and I will give you clear, simple advice based on your real soil readings.
+        </div>
+        <div class="msg-time">Just now</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Chips -->
+  <div class="quick-wrap">
+    <button class="quick-chip" data-msg="Analyse my current soil data and tell me what to do">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      Analyse soil
+    </button>
+    <button class="quick-chip" data-msg="Should I water my crops today based on the soil moisture?">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+      Water today?
+    </button>
+    <button class="quick-chip" data-msg="Is my soil pH level healthy for growing crops?">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/></svg>
+      Check pH
+    </button>
+    <button class="quick-chip" data-msg="What crops should I plant based on my current soil conditions?">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 22V12m0 0C12 7 7 4 2 6c5 0 10 4 10 6zm0 0c0-5 5-8 10-6-5 0-10 4-10 6z"/></svg>
+      What to plant?
+    </button>
+    <button class="quick-chip" data-msg="How do I improve my soil health using organic methods?">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+      Improve soil
+    </button>
+  </div>
+
+  <!-- Input -->
+  <div class="input-bar">
+    <div class="input-inner">
+      <textarea id="userInput" rows="1" placeholder="Ask about your farm, crops, or soil..."></textarea>
+      <button class="send-btn" id="sendBtn" aria-label="Send message">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
+          <path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"/>
+        </svg>
+      </button>
+    </div>
+    <div class="input-hint">Enter to send &nbsp;&middot;&nbsp; Shift+Enter for new line</div>
+  </div>
+
+</main>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<!-- App Logic -->
+<script src="chatbot-config.js"></script>
+<script src="kakedom-app.js"></script>
+</body>
+</html>

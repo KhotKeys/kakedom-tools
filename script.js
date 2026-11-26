@@ -358,7 +358,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     } else {
-        console.error('Hamburger menu elements not found:', {
+        console.log('No site navbar on this page (hamburger menu setup skipped):', {
             hamburger: !!hamburger,
             navMenu: !!navMenu
         });

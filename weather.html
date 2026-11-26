@@ -4,75 +4,508 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weather - Käkedom Tools</title>
-    <!--favicon-->
     <link rel="icon" type="image/jpeg" href="images/logo.jpeg">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="user-dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* ── SIDEBAR OVERLAY ── */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 998;
+        }
+        .sidebar-overlay.open { display: block; }
+
+        /* ── HAMBURGER ── */
+        .hamburger-btn {
+            display: none;
+            background: var(--primary-green, #2e7d32);
+            border: none;
+            border-radius: 8px;
+            width: 38px;
+            height: 38px;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        /* ── HEADER FIX ── */
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: nowrap;
+            overflow: hidden;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .user-details { min-width: 0; }
+
+        .user-details h4 {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 160px;
+        }
+
+        .header-actions { flex-shrink: 0; }
+
+        /* ── WEATHER STYLES ── */
+        .weather-hero {
+            background: linear-gradient(135deg, #1565c0 0%, #42a5f5 100%);
+            border-radius: 20px;
+            padding: 2rem;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .weather-hero-left h2 {
+            font-size: 1rem;
+            font-weight: 500;
+            opacity: 0.85;
+            margin-bottom: 0.25rem;
+        }
+
+        .weather-temp {
+            font-size: 4rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .weather-temp span {
+            font-size: 1.5rem;
+            font-weight: 400;
+            opacity: 0.8;
+        }
+
+        .weather-desc {
+            font-size: 1rem;
+            opacity: 0.85;
+            margin-top: 0.5rem;
+        }
+
+        .weather-hero-right {
+            text-align: right;
+        }
+
+        .weather-icon-big {
+            font-size: 4rem;
+            opacity: 0.9;
+        }
+
+        .weather-location {
+            font-size: 12px;
+            opacity: 0.7;
+            margin-top: 0.25rem;
+        }
+
+        /* Weather detail grid */
+        .weather-detail-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .weather-detail-card {
+            background: white;
+            border-radius: 14px;
+            padding: 1.25rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+            border: 1px solid #e8f0e8;
+            text-align: center;
+        }
+
+        .weather-detail-card i {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: #2e7d32;
+        }
+
+        .weather-detail-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a2e1a;
+            display: block;
+        }
+
+        .weather-detail-label {
+            font-size: 11px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 2px;
+        }
+
+        /* Farming advice card */
+        .farming-advice-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+            border: 1px solid #e8f0e8;
+            margin-bottom: 1.5rem;
+        }
+
+        .farming-advice-card h3 {
+            font-size: 15px;
+            color: #2e7d32;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .advice-list {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .advice-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 13.5px;
+            color: #444;
+            line-height: 1.5;
+        }
+
+        .advice-list li i {
+            color: #2e7d32;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+
+        /* 7-day forecast */
+        .forecast-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+
+        .forecast-day {
+            background: white;
+            border-radius: 12px;
+            padding: 1rem 0.5rem;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border: 1px solid #e8f0e8;
+        }
+
+        .forecast-day.today {
+            background: #2e7d32;
+            color: white;
+            border-color: #2e7d32;
+        }
+
+        .forecast-day-name {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            opacity: 0.7;
+        }
+
+        .forecast-day.today .forecast-day-name { opacity: 0.85; }
+
+        .forecast-icon {
+            font-size: 1.5rem;
+            margin: 0.5rem 0;
+        }
+
+        .forecast-temp-high {
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .forecast-temp-low {
+            font-size: 11px;
+            opacity: 0.6;
+        }
+
+        .section-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1a2e1a;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 768px) {
+            .hamburger-btn { display: flex; }
+
+            .sidebar {
+                position: fixed !important;
+                left: -280px !important;
+                top: 0; bottom: 0;
+                z-index: 999;
+                transition: left 0.28s cubic-bezier(.4,0,.2,1);
+                width: 260px !important;
+                overflow-y: auto;
+            }
+
+            .sidebar.open { left: 0 !important; }
+
+            .main-content {
+                width: 100% !important;
+                margin-left: 0 !important;
+            }
+
+            .dashboard-container { flex-direction: column; }
+
+            .weather-detail-grid { grid-template-columns: repeat(2, 1fr); }
+
+            .forecast-grid { grid-template-columns: repeat(4, 1fr); }
+
+            .weather-temp { font-size: 3rem; }
+
+            .user-details h4 { max-width: 100px; }
+        }
+
+        @media (max-width: 480px) {
+            .weather-detail-grid { grid-template-columns: repeat(2, 1fr); }
+            .forecast-grid { grid-template-columns: repeat(3, 1fr); }
+            .weather-hero { padding: 1.25rem; }
+            .weather-temp { font-size: 2.5rem; }
+            .btn-logout span { display: none; }
+        }
+
+        @media (min-width: 1400px) {
+            .weather-detail-grid { grid-template-columns: repeat(4, 1fr); }
+        }
+    </style>
 </head>
 <body>
-    <div class="dashboard-container">
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <h3><img src="images/logo.jpeg" alt="Käkedom Tools Logo" class="dashboard-logo-img"> Käkedom Tools</h3>
-            </div>
-            <nav class="sidebar-menu">
-                <ul>
-                    <li><a href="user-dashboard.html" title="Dashboard"><i class="fas fa-th-large"></i><span>Dashboard</span></a></li>
-                    <li><a href="soil-monitoring.html" title="Soil Monitoring"><i class="fas fa-seedling"></i><span>Soil Monitoring</span></a></li>
-                    <li><a href="weather.html" title="Weather" class="active"><i class="fas fa-cloud-sun"></i><span>Weather</span></a></li>
-                    <li><a href="yield-prediction.html" title="Yield Prediction"><i class="fas fa-chart-line"></i><span>Yield Prediction</span></a></li>
-                    <li><a href="water-management.html" title="Water Management"><i class="fas fa-tint"></i><span>Water Management</span></a></li>
-                    <li><a href="learning.html" title="Learning"><i class="fas fa-book-open"></i><span>Learning</span></a></li>
-                    <li><a href="seed-bank.html" title="Seed Bank"><i class="fas fa-hand-holding-seedling"></i><span>Seed Bank</span></a></li>
-                    <li><a href="resource-sharing.html" title="Resource Sharing"><i class="fas fa-share-alt"></i><span>Resource Sharing</span></a></li>
-                    <li><a href="index.html" title="Landing Page"><i class="fas fa-home"></i><span>Home</span></a></li>
-                </ul>
-            </nav>
-        </aside>
-        <div class="main-content">
-            <header class="header">
-                <div class="header-content">
-                    <div class="user-profile">
-                        <img src="./images/africa_numbers_cover.jpg" alt="User Avatar" class="avatar">
-                        <div class="user-details">
-                            <h4 id="user-name">Loading...</h4>
-                            <small id="user-role">Farmer</small>
-                        </div>
-                    </div>
-                    <div class="header-actions">
-                        <button class="btn btn-logout" id="logout-btn">
-                            <i class="fas fa-sign-out-alt"></i>
-                            <span>Logout</span>
-                        </button>
-                    </div>
-                </div>
-            </header>
-            <main class="main-container">
-                <div class="dashboard-header animate-fade-in-up">
-                    <h2>Weather</h2>
-                    <p>Monitor weather conditions and forecasts. (Feature coming soon!)</p>
-                </div>
-                <div class="impact-grid animate-fade-in-up" style="animation-delay: 0.2s;">
-                    <div class="impact-card">
-                        <span class="impact-number">--</span>
-                        <h3>Temperature</h3>
-                        <p>Optimal range: 22-28°C</p>
-                    </div>
-                    <div class="impact-card">
-                        <span class="impact-number">--</span>
-                        <h3>Humidity</h3>
-                        <p>Optimal range: 60-80%</p>
-                    </div>
-                    <div class="impact-card">
-                        <span class="impact-number">--</span>
-                        <h3>Rainfall</h3>
-                        <p>Feature coming soon</p>
-                    </div>
-                </div>
-            </main>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<div class="dashboard-container">
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3>
+                <img src="images/logo.jpeg" alt="Käkedom Tools Logo" class="dashboard-logo-img">
+                Käkedom Tools
+            </h3>
         </div>
+        <nav class="sidebar-menu">
+            <ul>
+                <li><a href="user-dashboard.html"><i class="fas fa-th-large"></i><span>Dashboard</span></a></li>
+                <li><a href="soil-monitoring.html"><i class="fas fa-seedling"></i><span>Soil Monitoring</span></a></li>
+                <li><a href="weather.html" class="active"><i class="fas fa-cloud-sun"></i><span>Weather</span></a></li>
+                <li><a href="yield-prediction.html"><i class="fas fa-chart-line"></i><span>Yield Prediction</span></a></li>
+                <li><a href="water-management.html"><i class="fas fa-tint"></i><span>Water Management</span></a></li>
+                <li><a href="learning.html"><i class="fas fa-book-open"></i><span>Learning</span></a></li>
+                <li><a href="seed-bank.html"><i class="fas fa-hand-holding-seedling"></i><span>Seed Bank</span></a></li>
+                <li><a href="resource-sharing.html"><i class="fas fa-share-alt"></i><span>Resource Sharing</span></a></li>
+                <li><a href="index.html"><i class="fas fa-home"></i><span>Home</span></a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <div class="main-content">
+        <header class="header">
+            <div class="header-content">
+                <button class="hamburger-btn" id="hamburgerBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="user-profile">
+                    <img src="./images/africa_numbers_cover.jpg" alt="User Avatar" class="avatar">
+                    <div class="user-details">
+                        <h4 id="user-name">Loading...</h4>
+                        <small id="user-role">Farmer</small>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-logout" id="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-container">
+            <div class="dashboard-header animate-fade-in-up">
+                <h2>Weather</h2>
+                <p>Current weather conditions for Kiryandongo Refugee Settlement, Uganda.</p>
+            </div>
+
+            <!-- Hero Weather Card -->
+            <div class="weather-hero animate-fade-in-up" style="animation-delay:0.1s;">
+                <div class="weather-hero-left">
+                    <h2>Kiryandongo, Uganda</h2>
+                    <div class="weather-temp" id="hero-temp">26<span>°C</span></div>
+                    <div class="weather-desc" id="hero-desc">Partly Cloudy — Good farming conditions</div>
+                </div>
+                <div class="weather-hero-right">
+                    <div class="weather-icon-big" id="hero-icon">
+                        <i class="fas fa-cloud-sun"></i>
+                    </div>
+                    <div class="weather-location">
+                        <i class="fas fa-map-marker-alt"></i>
+                        Kiryandongo District
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detail Cards -->
+            <div class="weather-detail-grid animate-fade-in-up" style="animation-delay:0.2s;">
+                <div class="weather-detail-card">
+                    <i class="fas fa-tint"></i>
+                    <span class="weather-detail-value" id="w-humidity">58%</span>
+                    <div class="weather-detail-label">Humidity</div>
+                </div>
+                <div class="weather-detail-card">
+                    <i class="fas fa-wind"></i>
+                    <span class="weather-detail-value">12 km/h</span>
+                    <div class="weather-detail-label">Wind Speed</div>
+                </div>
+                <div class="weather-detail-card">
+                    <i class="fas fa-eye"></i>
+                    <span class="weather-detail-value">10 km</span>
+                    <div class="weather-detail-label">Visibility</div>
+                </div>
+                <div class="weather-detail-card">
+                    <i class="fas fa-sun"></i>
+                    <span class="weather-detail-value">UV 6</span>
+                    <div class="weather-detail-label">UV Index</div>
+                </div>
+            </div>
+
+            <!-- Farming Advice -->
+            <div class="farming-advice-card animate-fade-in-up" style="animation-delay:0.3s;">
+                <h3><i class="fas fa-seedling"></i> Today's Farming Advice</h3>
+                <ul class="advice-list">
+                    <li>
+                        <i class="fas fa-check-circle"></i>
+                        Good conditions for outdoor farming today. Temperature is in a healthy range for most crops.
+                    </li>
+                    <li>
+                        <i class="fas fa-tint"></i>
+                        Humidity at 58% — monitor your soil moisture and water if it drops below 50%.
+                    </li>
+                    <li>
+                        <i class="fas fa-clock"></i>
+                        Best time to water crops is early morning between 6am and 8am to reduce evaporation.
+                    </li>
+                    <li>
+                        <i class="fas fa-shield-alt"></i>
+                        No rain expected today — ensure your crops have enough moisture before midday heat.
+                    </li>
+                </ul>
+            </div>
+
+            <!-- 7-Day Forecast -->
+            <div class="animate-fade-in-up" style="animation-delay:0.4s;">
+                <div class="section-title">
+                    <i class="fas fa-calendar-alt" style="color:#2e7d32;"></i>
+                    7-Day Forecast
+                </div>
+                <div class="forecast-grid">
+                    <div class="forecast-day today">
+                        <div class="forecast-day-name">Today</div>
+                        <div class="forecast-icon"><i class="fas fa-cloud-sun"></i></div>
+                        <div class="forecast-temp-high">26°C</div>
+                        <div class="forecast-temp-low">18°C</div>
+                    </div>
+                    <div class="forecast-day">
+                        <div class="forecast-day-name">Thu</div>
+                        <div class="forecast-icon"><i class="fas fa-sun"></i></div>
+                        <div class="forecast-temp-high">28°C</div>
+                        <div class="forecast-temp-low">19°C</div>
+                    </div>
+                    <div class="forecast-day">
+                        <div class="forecast-day-name">Fri</div>
+                        <div class="forecast-icon"><i class="fas fa-cloud-rain"></i></div>
+                        <div class="forecast-temp-high">22°C</div>
+                        <div class="forecast-temp-low">16°C</div>
+                    </div>
+                    <div class="forecast-day">
+                        <div class="forecast-day-name">Sat</div>
+                        <div class="forecast-icon"><i class="fas fa-cloud-showers-heavy"></i></div>
+                        <div class="forecast-temp-high">21°C</div>
+                        <div class="forecast-temp-low">15°C</div>
+                    </div>
+                    <div class="forecast-day">
+                        <div class="forecast-day-name">Sun</div>
+                        <div class="forecast-icon"><i class="fas fa-cloud-sun"></i></div>
+                        <div class="forecast-temp-high">24°C</div>
+                        <div class="forecast-temp-low">17°C</div>
+                    </div>
+                    <div class="forecast-day">
+                        <div class="forecast-day-name">Mon</div>
+                        <div class="forecast-icon"><i class="fas fa-sun"></i></div>
+                        <div class="forecast-temp-high">27°C</div>
+                        <div class="forecast-temp-low">18°C</div>
+                    </div>
+                    <div class="forecast-day">
+                        <div class="forecast-day-name">Tue</div>
+                        <div class="forecast-icon"><i class="fas fa-cloud"></i></div>
+                        <div class="forecast-temp-high">25°C</div>
+                        <div class="forecast-temp-low">17°C</div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
     </div>
-    <script src="script.js" type="module"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</div>
+
+<script>
+// ── SIDEBAR MOBILE ──
+var hamburgerBtn = document.getElementById('hamburgerBtn');
+var sidebarEl    = document.getElementById('sidebar');
+var overlayEl    = document.getElementById('sidebarOverlay');
+
+hamburgerBtn.addEventListener('click', function() {
+    sidebarEl.classList.add('open');
+    overlayEl.classList.add('open');
+    document.body.style.overflow = 'hidden';
+});
+
+overlayEl.addEventListener('click', function() {
+    sidebarEl.classList.remove('open');
+    overlayEl.classList.remove('open');
+    document.body.style.overflow = '';
+});
+
+// ── PULL HUMIDITY FROM FIREBASE ──
+fetch("https://cmua-7957a-default-rtdb.firebaseio.com/smart_agriculture.json")
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        if (!data) return;
+        var hum = document.getElementById('w-humidity');
+        var heroTemp = document.getElementById('hero-temp');
+        if (hum) hum.textContent = data.humidity_percent + '%';
+        if (heroTemp) heroTemp.innerHTML = data.temperature_C + '<span>°C</span>';
+    })
+    .catch(function(e) { console.error('Weather sensor error:', e); });
+</script>
+
+<script src="script.js" type="module"></script>
 </body>
-</html> 
+</html>

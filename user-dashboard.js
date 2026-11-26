@@ -229,7 +229,7 @@ async function initDashboard() {
         const { getFirestore } = await import("https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js");
         
         const firebaseConfig = {
-            apiKey: "YOUR_FIREBASE_API_KEY",
+            apiKey: "AIzaSyBOJSo0b_AN4HB7wHVN8ERAAgGkilTnZWk",
             authDomain: "cmua-7957a.firebaseapp.com",
             databaseURL: "https://cmua-7957a-default-rtdb.firebaseio.com",
             projectId: "cmua-7957a",
@@ -243,6 +243,9 @@ async function initDashboard() {
         const app = initializeApp(firebaseConfig);
         auth = getAuth(app);
         db = getFirestore(app);
+
+        const { setPersistence, browserLocalPersistence } = await import("https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js");
+        await setPersistence(auth, browserLocalPersistence);
         
         console.log('✅ Firebase initialized for dashboard');
         console.log('🔐 Auth object:', !!auth);
@@ -324,25 +327,10 @@ async function initDashboard() {
 }
 
 // Initialize dashboard when page loads
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('📄 DOM loaded, initializing dashboard...');
-    // Add a small delay to ensure all resources are loaded
-    setTimeout(() => {
-        initDashboard();
-    }, 100);
-});
-
-// Also try to initialize if DOM is already loaded
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
-        console.log('📄 DOM loaded, initializing dashboard...');
-        setTimeout(() => {
-            initDashboard();
-        }, 100);
+        setTimeout(() => { initDashboard(); }, 100);
     });
 } else {
-    console.log('📄 DOM already loaded, initializing dashboard immediately...');
-    setTimeout(() => {
-        initDashboard();
-    }, 100);
-} 
+    setTimeout(() => { initDashboard(); }, 100);
+}
